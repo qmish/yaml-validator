@@ -19,7 +19,9 @@
 
 ```bash
 go build -o yaml-validator .
-# или (с Make): make build
+# или: make build
+# Linux/macOS кросс-сборка: ./build.sh
+# Windows: .\build.ps1
 ```
 
 ## Использование
