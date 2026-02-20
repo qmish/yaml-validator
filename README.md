@@ -14,7 +14,7 @@
 - **Распространённые ошибки** — табуляции вместо пробелов, слишком длинные строки (>200 символов), чувствительные данные (password, token и т.д.)
 - **Плагины** — расширяемость через `ValidatorPlugin` (встроенный плагин для Kubernetes)
 - **K8s по схеме** — опциональная проверка по полной OpenAPI/JSON Schema Kubernetes (типы полей, все ресурсы), через [kubeconform](https://github.com/yannh/kubeconform)
-- **Правила стиля** — document-start (`---`), document-end (`...`), запрет пробелов в конце строки, перевод строки в конце файла, запрет нескольких пустых строк подряд (опционально, конфиг `style:`)
+- **Правила стиля** — document-start (`---`), document-end (`...`), запрет пробелов в конце строки, перевод строки в конце файла, запрет нескольких пустых строк подряд, отступ у комментариев внутри блока (опционально, конфиг `style:`)
 - **Inline-игнор** — отключение правил через комментарии: `# yaml-validator disable-line rule:LineTooLong`, `# yaml-validator disable-next-line rule:TrailingSpaces`
 - **Логирование** — verbose режим, JSON-логи для ELK/Loki
 
@@ -85,6 +85,7 @@ rules:
     require_newline_at_eof: false
     forbid_consecutive_empty_lines: false
     require_document_end: false
+    require_comments_indented: false
   k8s_schema:
     enabled: false
     version: master

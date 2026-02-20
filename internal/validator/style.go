@@ -8,9 +8,9 @@ import (
 	"yaml-validator/pkg"
 )
 
-// CheckStyle проверяет правила стиля (document-start/end, trailing spaces, newline at EOF, consecutive empty lines)
+// CheckStyle проверяет правила стиля (document-start/end, trailing spaces, newline at EOF, consecutive empty lines, comment indentation)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
-	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd {
+	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented {
 		return nil
 	}
 
@@ -89,6 +89,28 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				}
 				break
 			}
+		}
+	}
+
+	if opts.RequireCommentsIndented {
+		lastIndent := 0
+		for i, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			if trimmed == "" {
+				continue
+			}
+			if strings.HasPrefix(trimmed, "#") {
+				commentIndent := len(line) - len(strings.TrimLeft(line, " \t"))
+				if lastIndent > 0 && commentIndent == 0 {
+					errors = append(errors, pkg.Error{
+						Type:    "CommentIndentation",
+						Message: "comment should be indented to match the block",
+						Line:    i + 1,
+					})
+				}
+				continue
+			}
+			lastIndent = len(line) - len(strings.TrimLeft(line, " \t"))
 		}
 	}
 

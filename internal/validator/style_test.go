@@ -97,6 +97,28 @@ func TestCheckStyle_RequireDocumentEnd_Ok(t *testing.T) {
 	assert.Empty(t, errors)
 }
 
+func TestCheckStyle_RequireCommentsIndented(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key:\n  sub: 1\n# unindented comment\n  other: 2\n"), 0644))
+
+	opts := config.StyleOptions{RequireCommentsIndented: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "CommentIndentation", errors[0].Type)
+	assert.Equal(t, 3, errors[0].Line)
+}
+
+func TestCheckStyle_RequireCommentsIndented_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key:\n  sub: 1\n  # indented comment\n  other: 2\n"), 0644))
+
+	opts := config.StyleOptions{RequireCommentsIndented: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_Disabled(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

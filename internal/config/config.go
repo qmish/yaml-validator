@@ -22,6 +22,7 @@ type StyleOptions struct {
 	RequireNewlineAtEof  bool `yaml:"require_newline_at_eof"` // требовать перевод строки в конце файла
 	ForbidConsecutiveEmptyLines bool `yaml:"forbid_consecutive_empty_lines"` // запрет более одной пустой строки подряд
 	RequireDocumentEnd  bool `yaml:"require_document_end"` // требовать ... в конце файла (много-документный YAML)
+	RequireCommentsIndented bool `yaml:"require_comments_indented"` // комментарии внутри блока должны иметь отступ (как в yamllint)
 }
 
 // ValidationRules определяет правила валидации
