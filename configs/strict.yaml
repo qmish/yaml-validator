@@ -9,6 +9,7 @@ rules:
     forbid_trailing_spaces: true
     require_newline_at_eof: true
     forbid_consecutive_empty_lines: true
+    require_document_end: false
   k8s_schema:
     enabled: false
   required_fields: []

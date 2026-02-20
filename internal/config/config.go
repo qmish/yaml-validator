@@ -21,6 +21,7 @@ type StyleOptions struct {
 	ForbidTrailingSpaces bool `yaml:"forbid_trailing_spaces"` // запрет пробелов в конце строки
 	RequireNewlineAtEof  bool `yaml:"require_newline_at_eof"` // требовать перевод строки в конце файла
 	ForbidConsecutiveEmptyLines bool `yaml:"forbid_consecutive_empty_lines"` // запрет более одной пустой строки подряд
+	RequireDocumentEnd  bool `yaml:"require_document_end"` // требовать ... в конце файла (много-документный YAML)
 }
 
 // ValidationRules определяет правила валидации

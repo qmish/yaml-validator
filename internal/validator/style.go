@@ -8,9 +8,9 @@ import (
 	"yaml-validator/pkg"
 )
 
-// CheckStyle проверяет правила стиля (document-start, trailing spaces, newline at EOF, consecutive empty lines)
+// CheckStyle проверяет правила стиля (document-start/end, trailing spaces, newline at EOF, consecutive empty lines)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
-	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines {
+	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd {
 		return nil
 	}
 
@@ -71,6 +71,23 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				}
 			} else {
 				emptyCount = 0
+			}
+		}
+	}
+
+	if opts.RequireDocumentEnd && len(lines) > 0 {
+		lastNonEmptyLine := 0
+		for i := len(lines) - 1; i >= 0; i-- {
+			if strings.TrimSpace(lines[i]) != "" {
+				lastNonEmptyLine = i + 1
+				if strings.TrimSpace(lines[i]) != "..." {
+					errors = append(errors, pkg.Error{
+						Type:    "DocumentEnd",
+						Message: "document should end with '...'",
+						Line:    lastNonEmptyLine,
+					})
+				}
+				break
 			}
 		}
 	}

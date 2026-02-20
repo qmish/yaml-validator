@@ -144,7 +144,7 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 
 ### Что можно усилить (по сравнению с другими)
 
-1. **Больше правил стиля** — добавлено: запрет подряд идущих пустых строк (`forbid_consecutive_empty_lines`). Длина строки уже настраивается через `max_line_length`. Возможные расширения: quoted-strings, key-ordering, comment indentation (как в yamllint).
+1. **Больше правил стиля** — добавлено: запрет подряд идущих пустых строк (`forbid_consecutive_empty_lines`), требование `...` в конце файла (`require_document_end`). Длина строки настраивается через `max_line_length`. Возможные расширения: quoted-strings, key-ordering, comment indentation (как в yamllint).
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
 3. **Доп. форматы** — реализовано: `-o compact` (файл:строка: сообщение, ESLint-style) для редакторов и скриптов. Возможное расширение: колонка в выводе.
 

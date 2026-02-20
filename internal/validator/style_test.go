@@ -76,6 +76,27 @@ func TestCheckStyle_ConsecutiveEmptyLines_Ok(t *testing.T) {
 	assert.Empty(t, errors)
 }
 
+func TestCheckStyle_RequireDocumentEnd(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("---\nkey: value\n"), 0644))
+
+	opts := config.StyleOptions{RequireDocumentEnd: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "DocumentEnd", errors[0].Type)
+}
+
+func TestCheckStyle_RequireDocumentEnd_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("---\nkey: value\n...\n"), 0644))
+
+	opts := config.StyleOptions{RequireDocumentEnd: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_Disabled(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")
