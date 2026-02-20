@@ -54,6 +54,28 @@ func TestCheckStyle_RequireNewlineAtEof(t *testing.T) {
 	assert.Equal(t, "NewlineAtEof", errors[0].Type)
 }
 
+func TestCheckStyle_ConsecutiveEmptyLines(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("a: 1\n\n\nb: 2\n"), 0644))
+
+	opts := config.StyleOptions{ForbidConsecutiveEmptyLines: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "ConsecutiveEmptyLines", errors[0].Type)
+	assert.Equal(t, 3, errors[0].Line)
+}
+
+func TestCheckStyle_ConsecutiveEmptyLines_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("a: 1\n\nb: 2\n"), 0644))
+
+	opts := config.StyleOptions{ForbidConsecutiveEmptyLines: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_Disabled(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

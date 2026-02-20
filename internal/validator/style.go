@@ -8,9 +8,9 @@ import (
 	"yaml-validator/pkg"
 )
 
-// CheckStyle проверяет правила стиля (document-start, trailing spaces, newline at EOF)
+// CheckStyle проверяет правила стиля (document-start, trailing spaces, newline at EOF, consecutive empty lines)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
-	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof {
+	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines {
 		return nil
 	}
 
@@ -54,6 +54,24 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				Message: "missing newline at end of file",
 				Line:    len(lines),
 			})
+		}
+	}
+
+	if opts.ForbidConsecutiveEmptyLines {
+		emptyCount := 0
+		for i, line := range lines {
+			if strings.TrimSpace(line) == "" {
+				emptyCount++
+				if emptyCount > 1 {
+					errors = append(errors, pkg.Error{
+						Type:    "ConsecutiveEmptyLines",
+						Message: "more than one consecutive empty line",
+						Line:    i + 1,
+					})
+				}
+			} else {
+				emptyCount = 0
+			}
 		}
 	}
 
