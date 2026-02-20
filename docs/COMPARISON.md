@@ -38,6 +38,8 @@
 | Длина строки          | ✅ line-length     | ✅ max_line_length                 |
 | Табы vs пробелы       | ✅ indentation     | ✅ TabInsteadOfSpaces             |
 | document-start / EOF  | ✅                | ✅ style (v1.3.0)                  |
+| document-end (...)    | ✅                | ✅ style.require_document_end (v1.8.0) |
+| Пустые строки подряд  | ✅ empty-lines    | ✅ style.forbid_consecutive_empty_lines (v1.7.0) |
 | Trailing spaces       | ✅                | ✅ style.forbid_trailing_spaces    |
 | Inline disable        | ✅ disable-line    | ✅ disable-line / disable-next-line (v1.4.0) |
 | Синтаксис             | ✅                 | ✅ CheckSyntax                    |
@@ -116,7 +118,7 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 |---------------------------|----------|----------------------|----------------|
 | Синтаксис YAML            | ✅       | ✅                   | ✅             |
 | Дубликаты ключей          | ✅       | ❌                   | ✅             |
-| Стиль (длина, табы, trailing, document-start, newline EOF) | ✅ много | ❌ | ✅ (style + common_errors) |
+| Стиль (document-start/end, trailing, newline EOF, пустые строки, длина, табы) | ✅ много | ❌ | ✅ (style + common_errors) |
 | Inline disable правил     | ✅       | ❌                   | ✅ (v1.4.0)    |
 | Обязательные поля K8s     | ❌       | через схему          | ✅             |
 | Схема K8s (типы, API)     | ❌       | ✅                   | ✅ опц. (v1.2.0, kubeconform) |
@@ -137,7 +139,7 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 3. **Гибкий конфиг** — разные профили (K8s vs docker-compose, strict), свои обязательные поля и паттерны.
 4. **Отчёты для CI** — JSON, JUnit и **SARIF** (v1.5.0) для GitHub Code Scanning.
 5. **K8s по схеме** (v1.2.0) — опциональная полная проверка через kubeconform (`configs/k8s-strict.yaml`).
-6. **Правила стиля** (v1.3.0) — document-start, trailing spaces, newline at EOF (`configs/strict.yaml`).
+6. **Правила стиля** (v1.3.0–v1.8.0) — document-start, document-end, trailing spaces, newline at EOF, запрет пустых строк подряд (`configs/strict.yaml`).
 7. **Inline-игнор** (v1.4.0) — отключение правил через комментарии, как в yamllint.
 8. **Лицензия MIT** — проще использование в корпоративных проектах по сравнению с GPL.
 9. **Сборка и CI** (v1.5.1) — Docker на Go 1.24, GitHub Actions с явной версией Go, публикация образа в ghcr.io при релизе.
@@ -148,4 +150,4 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
 3. **Доп. форматы** — реализовано: `-o compact` (файл:строка: сообщение, ESLint-style) для редакторов и скриптов. Возможное расширение: колонка в выводе.
 
-Документ обновлён по состоянию после v1.5.1.
+Документ обновлён по состоянию v1.8.0.
