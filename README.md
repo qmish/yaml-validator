@@ -1,5 +1,9 @@
 # YAML Validator
 
+[![CI](https://github.com/qmish/yaml-validator/actions/workflows/yaml-validation.yml/badge.svg)](https://github.com/qmish/yaml-validator/actions/workflows/yaml-validation.yml)
+[![Release](https://img.shields.io/github/v/release/qmish/yaml-validator)](https://github.com/qmish/yaml-validator/releases)
+[![Go 1.21+](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go)](https://go.dev/)
+
 Инструмент для проверки YAML-файлов на Go, предназначенный для DevOps.
 
 ## Возможности
