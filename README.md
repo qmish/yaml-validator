@@ -154,7 +154,10 @@ chmod +x .git/hooks/pre-commit
 ### Docker
 
 ```bash
-# Сборка образа
+# Образ из GitHub Container Registry
+docker pull ghcr.io/qmish/yaml-validator:latest
+
+# Сборка локально
 docker build -t yaml-validator .
 
 # Запуск с монтированием директории
