@@ -30,7 +30,7 @@ test-coverage:
 	go tool cover -html=coverage.out -o coverage.html
 
 validate: build
-	./bin/$(BINARY) validate configs/default.yaml testdata/examples/valid.yaml
+	./bin/$(BINARY) validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
 
 docker:
 	docker build -t yaml-validator .

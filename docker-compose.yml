@@ -5,7 +5,7 @@ services:
     volumes:
       - .:/workspace:ro
     working_dir: /workspace
-    command: validate configs/default.yaml testdata/examples/valid.yaml
+    command: validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
     profiles:
       - test
 
