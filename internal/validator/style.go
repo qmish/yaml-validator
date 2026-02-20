@@ -8,9 +8,9 @@ import (
 	"yaml-validator/pkg"
 )
 
-// CheckStyle проверяет правила стиля (document-start/end, trailing spaces, newline at EOF, consecutive empty lines, comment indentation)
+// CheckStyle проверяет правила стиля (document-start/end, trailing spaces, newline at EOF, consecutive empty lines, comment indentation, quoted keys)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
-	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented {
+	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys {
 		return nil
 	}
 
@@ -92,7 +92,7 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 		}
 	}
 
-	if opts.RequireCommentsIndented {
+		if opts.RequireCommentsIndented {
 		lastIndent := 0
 		for i, line := range lines {
 			trimmed := strings.TrimSpace(line)
@@ -111,6 +111,33 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				continue
 			}
 			lastIndent = len(line) - len(strings.TrimLeft(line, " \t"))
+		}
+	}
+
+	if opts.RequireQuotedKeys {
+		for i, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			if trimmed == "" || strings.HasPrefix(trimmed, "#") || trimmed == "---" || trimmed == "..." {
+				continue
+			}
+			if strings.HasPrefix(strings.TrimLeft(line, " \t"), "- ") {
+				continue
+			}
+			idx := strings.Index(line, ":")
+			if idx < 0 {
+				continue
+			}
+			keyPart := strings.TrimSpace(line[:idx])
+			if keyPart == "" {
+				continue
+			}
+			if keyPart[0] != '"' && keyPart[0] != '\'' {
+				errors = append(errors, pkg.Error{
+					Type:    "QuotedKeys",
+					Message: "mapping key should be quoted",
+					Line:    i + 1,
+				})
+			}
 		}
 	}
 

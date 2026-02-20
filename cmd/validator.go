@@ -114,6 +114,7 @@ var configInitCmd = &cobra.Command{
     forbid_consecutive_empty_lines: false
     require_document_end: false
     require_comments_indented: false
+    require_quoted_keys: false
   k8s_schema:
     enabled: false
     version: master

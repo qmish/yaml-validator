@@ -54,7 +54,7 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 	}
 
 	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.RequireNewlineAtEof ||
-		rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireDocumentEnd || rules.Style.RequireCommentsIndented {
+		rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireDocumentEnd || rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys {
 		allErrors = append(allErrors, CheckStyle(filename, rules.Style)...)
 	}
 

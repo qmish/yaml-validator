@@ -119,6 +119,28 @@ func TestCheckStyle_RequireCommentsIndented_Ok(t *testing.T) {
 	assert.Empty(t, errors)
 }
 
+func TestCheckStyle_RequireQuotedKeys(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key: value\n"), 0644))
+
+	opts := config.StyleOptions{RequireQuotedKeys: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "QuotedKeys", errors[0].Type)
+	assert.Equal(t, 1, errors[0].Line)
+}
+
+func TestCheckStyle_RequireQuotedKeys_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("\"key\": value\n"), 0644))
+
+	opts := config.StyleOptions{RequireQuotedKeys: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_Disabled(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")
