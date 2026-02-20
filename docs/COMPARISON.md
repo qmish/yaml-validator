@@ -13,7 +13,7 @@
 | **kubeconform** | Go     | K8s OpenAPI        | Apache 2.0   |
 | **kube-score**  | Go     | K8s best practices | —            |
 | **yq**          | Go     | Запросы/формат     | MIT          |
-| **yaml-validator** (наш) | Go | Синтаксис + дубликаты + K8s-поля + **K8s OpenAPI-схема** (опционально) + расширяемость | MIT |
+| **yaml-validator** (наш) | Go | Синтаксис, дубликаты, K8s-поля, **K8s OpenAPI-схема** (опц.), **правила стиля**, **inline-игнор**, плагины | MIT |
 
 ---
 
@@ -37,6 +37,9 @@
 | Дубликаты ключей      | ✅ key-duplicates  | ✅ CheckDuplicates                |
 | Длина строки          | ✅ line-length     | ✅ max_line_length                 |
 | Табы vs пробелы       | ✅ indentation     | ✅ TabInsteadOfSpaces             |
+| document-start / EOF  | ✅                | ✅ style (v1.3.0)                  |
+| Trailing spaces       | ✅                | ✅ style.forbid_trailing_spaces    |
+| Inline disable        | ✅ disable-line    | ✅ disable-line / disable-next-line (v1.4.0) |
 | Синтаксис             | ✅                 | ✅ CheckSyntax                    |
 | Обязательные поля     | ❌                 | ✅ apiVersion, kind, metadata.name |
 | Чувствительные данные | ❌                 | ✅ password, token, secret        |
@@ -64,9 +67,9 @@
 
 | Критерий           | kubeval / kubeconform | yaml-validator              |
 |--------------------|------------------------|-----------------------------|
-| Схема K8s API      | ✅ полная              | ❌ только базовые поля      |
-| apiVersion, kind   | ✅ по схеме            | ✅ плагин K8s                |
-| Типы полей        | ✅ (int, string, …)   | ❌ не проверяются           |
+| Схема K8s API      | ✅ полная              | ✅ опционально (kubeconform, v1.2.0) |
+| apiVersion, kind   | ✅ по схеме            | ✅ плагин K8s + схема       |
+| Типы полей        | ✅ (int, string, …)   | ✅ при k8s_schema.enabled  |
 | Синтаксис YAML     | Зависит от парсера    | ✅                          |
 | Дубликаты ключей   | ❌                     | ✅                          |
 | Другие форматы    | Только K8s             | ✅ любой YAML + конфиг      |
@@ -113,9 +116,10 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 |---------------------------|----------|----------------------|----------------|
 | Синтаксис YAML            | ✅       | ✅                   | ✅             |
 | Дубликаты ключей          | ✅       | ❌                   | ✅             |
-| Стиль (отступы, длина)    | ✅ много | ❌                   | ✅ базово      |
+| Стиль (длина, табы, trailing, document-start, newline EOF) | ✅ много | ❌ | ✅ (style + common_errors) |
+| Inline disable правил     | ✅       | ❌                   | ✅ (v1.4.0)    |
 | Обязательные поля K8s     | ❌       | через схему          | ✅             |
-| Схема K8s (типы, API)     | ❌       | ✅                   | ✅ (опционально, kubeconform) |
+| Схема K8s (типы, API)     | ❌       | ✅                   | ✅ опц. (v1.2.0, kubeconform) |
 | Чувствительные данные     | ❌       | ❌                   | ✅             |
 | Плагины / свои проверки   | ❌       | ❌                   | ✅             |
 | JSON/JUnit отчёт          | огранич. | разное               | ✅             |
@@ -130,17 +134,16 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 
 1. **Один бинарник на Go** — не нужен Python или внешний runtime, удобно в CI и контейнерах.
 2. **Расширяемость** — плагины (`ValidatorPlugin`), встроенный K8s-плагин.
-3. **Гибкий конфиг** — разные профили (K8s vs docker-compose), свои обязательные поля и паттерны.
+3. **Гибкий конфиг** — разные профили (K8s vs docker-compose, strict), свои обязательные поля и паттерны.
 4. **Отчёты для CI** — JSON и JUnit из коробки.
-5. **Доп. проверки** — чувствительные поля, табы, длина строки.
-6. **Лицензия MIT** — проще использование в корпоративных проектах по сравнению с GPL.
+5. **K8s по схеме** (v1.2.0) — опциональная полная проверка через kubeconform (`configs/k8s-strict.yaml`).
+6. **Правила стиля** (v1.3.0) — document-start, trailing spaces, newline at EOF (`configs/strict.yaml`).
+7. **Inline-игнор** (v1.4.0) — отключение правил через комментарии, как в yamllint.
+8. **Лицензия MIT** — проще использование в корпоративных проектах по сравнению с GPL.
 
 ### Что можно усилить (по сравнению с другими)
 
-1. **Правила стиля** — по образцу yamllint: document-start/end, quoted-strings, комментарии, key-ordering.
-2. **K8s-схема** — реализовано в v1.2.0: опциональная проверка по полной OpenAPI/схеме через kubeconform (`rules.k8s_schema.enabled`, конфиг `configs/k8s-strict.yaml`).
-3. **Правила стиля** — реализовано в v1.3.0: document-start, trailing spaces, newline at EOF (конфиг `style:`, `configs/strict.yaml`).
-4. **Inline-игнор** — реализовано в v1.4.0: `# yaml-validator disable-line rule:XXX`, `disable-next-line` (включается через `rules.inline_ignore`).
-4. **Больше форматов вывода** — например, SARIF для GitHub Advanced Security.
+1. **Больше правил стиля** — quoted-strings, key-ordering, comment indentation (как в yamllint).
+2. **Форматы вывода** — SARIF для GitHub Advanced Security.
 
 При необходимости этот документ можно вынести в репозиторий (например, в `docs/COMPARISON.md`) и обновлять по мере развития инструмента.
