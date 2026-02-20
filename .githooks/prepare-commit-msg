@@ -1,0 +1,12 @@
+#!/bin/sh
+# Удаляем Co-authored-by: cursoragent из сообщения коммита.
+# Использование: git config core.hooksPath .githooks
+FILE=$1
+if [ -z "$FILE" ] || [ ! -f "$FILE" ]; then exit 0; fi
+if [ -n "$GIT_EDITOR" ]; then
+  # Сообщение редактируется — правка при сохранении не нужна
+  exit 0
+fi
+# Удаляем строки Co-authored-by с cursoragent (регистронезависимо)
+sed -i.bak '/^Co-authored-by:.*[Cc]ursor[Aa]gent/d' "$FILE" 2>/dev/null || true
+rm -f "${FILE}.bak" 2>/dev/null || true

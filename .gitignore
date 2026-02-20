@@ -21,3 +21,6 @@ Thumbs.db
 
 # Config (local overrides)
 yaml-validator.yaml
+
+# Локальные заметки (не коммитить)
+COMMITS-AUTHORSHIP.local.md
