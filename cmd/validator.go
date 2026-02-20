@@ -47,6 +47,7 @@ var validateCmd = &cobra.Command{
 		cfg := loadConfig()
 		logger.Debug("Loaded config: check_syntax=%v, check_duplicates=%v", cfg.Rules.CheckSyntax, cfg.Rules.CheckDuplicates)
 		exitCode := 0
+		var sarifResults []reporter.FileResult
 
 		for _, file := range args {
 			logger.Debug("Validating file: %s", file)
@@ -64,20 +65,29 @@ var validateCmd = &cobra.Command{
 			}
 			logger.Debug("File %s: %d error(s)", file, len(errors))
 
-			switch outputFmt {
-			case "json":
-				report, _ := reporter.GenerateJSONReport(file, errors)
-				fmt.Println(string(report))
-			case "junit":
-				report, _ := reporter.GenerateJUnitReport(file, errors)
-				fmt.Println(string(report))
-			default:
-				reporter.PrintHumanReadable(file, errors)
+			if outputFmt == "sarif" {
+				sarifResults = append(sarifResults, reporter.FileResult{File: absPath, Errors: errors})
+			} else {
+				switch outputFmt {
+				case "json":
+					report, _ := reporter.GenerateJSONReport(file, errors)
+					fmt.Println(string(report))
+				case "junit":
+					report, _ := reporter.GenerateJUnitReport(file, errors)
+					fmt.Println(string(report))
+				default:
+					reporter.PrintHumanReadable(file, errors)
+				}
 			}
 
 			if len(errors) > 0 {
 				exitCode = 1
 			}
+		}
+
+		if outputFmt == "sarif" && len(sarifResults) > 0 {
+			report, _ := reporter.GenerateSARIFReport(version, sarifResults)
+			fmt.Println(string(report))
 		}
 
 		os.Exit(exitCode)
@@ -155,7 +165,7 @@ func loadConfig() *config.Config {
 }
 
 func init() {
-	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit")
+	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")

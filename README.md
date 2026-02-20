@@ -39,6 +39,9 @@ yaml-validator validate config.yaml -o json
 # Вывод в формате JUnit (для Jenkins, GitLab CI)
 yaml-validator validate config.yaml -o junit
 
+# Вывод в формате SARIF (для GitHub Code Scanning)
+yaml-validator validate config.yaml -o sarif > results.sarif
+
 # Использование конфигурационного файла
 yaml-validator validate config.yaml -c configs/default.yaml
 
@@ -134,6 +137,17 @@ go test ./... -v
 См. [CONTRIBUTING.md](CONTRIBUTING.md) для участия в разработке. [Сравнение с другими инструментами](docs/COMPARISON.md) (yamllint, kubeval, kubeconform и др.).
 
 ## Интеграция с CI/CD
+
+### GitHub Code Scanning (SARIF)
+
+```yaml
+- name: Validate YAML and upload SARIF
+  run: |
+    ./yaml-validator validate **/*.yaml **/*.yml -o sarif > results.sarif
+- uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: results.sarif
+```
 
 ### Git pre-commit hook
 

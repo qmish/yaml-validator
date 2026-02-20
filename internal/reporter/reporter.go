@@ -21,6 +21,7 @@ type Format string
 const (
 	FormatJSON          Format = "json"
 	FormatJUnit         Format = "junit"
+	FormatSARIF         Format = "sarif"
 	FormatHumanReadable Format = "human"
 )
 
