@@ -33,12 +33,18 @@ func CheckDuplicates(node *yaml.Node) []pkg.Error {
 
 			if existing, exists := keyTracker[key]; exists {
 				allPaths := append(existing, keyPath)
-				errors = append(errors, pkg.Error{
+				keyNode := mappingNode.Content[i]
+				e := pkg.Error{
 					Type:    "DuplicateKey",
 					Message: fmt.Sprintf("Duplicate key '%s' found in paths: %s",
 						key, strings.Join(allPaths, ", ")),
 					Path: keyPath,
-				})
+				}
+				if keyNode.Line > 0 {
+					e.Line = keyNode.Line
+					e.Column = keyNode.Column
+				}
+				errors = append(errors, e)
 			} else {
 				keyTracker[key] = []string{keyPath}
 			}

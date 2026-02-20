@@ -155,5 +155,9 @@ func regionFromError(e pkg.Error) *sarifRegion {
 	if e.Line <= 0 {
 		return nil
 	}
-	return &sarifRegion{StartLine: e.Line, StartColumn: 1}
+	col := e.Column
+	if col <= 0 {
+		col = 1
+	}
+	return &sarifRegion{StartLine: e.Line, StartColumn: col}
 }

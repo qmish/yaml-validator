@@ -58,11 +58,13 @@ func TestEscapeXML(t *testing.T) {
 func TestGenerateCompactReport(t *testing.T) {
 	errors := []pkg.Error{
 		{Type: "SyntaxError", Message: "invalid YAML", Line: 3},
-		{Type: "DuplicateKey", Message: "Duplicate key 'x'", Line: 0},
+		{Type: "DuplicateKey", Message: "Duplicate key 'x'", Line: 5, Column: 2},
+		{Type: "Other", Message: "no position", Line: 0},
 	}
 	out := GenerateCompactReport("app.yaml", errors)
 	assert.Contains(t, out, "app.yaml:3: invalid YAML")
-	assert.Contains(t, out, "app.yaml: Duplicate key 'x'")
+	assert.Contains(t, out, "app.yaml:5:2: Duplicate key 'x'")
+	assert.Contains(t, out, "app.yaml: no position")
 }
 
 func TestGenerateCompactReport_Empty(t *testing.T) {

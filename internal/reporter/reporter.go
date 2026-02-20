@@ -90,12 +90,17 @@ func PrintHumanReadable(file string, errors []pkg.Error) {
 	}
 }
 
-// GenerateCompactReport возвращает вывод в формате file:line: message (ESLint-style).
+// GenerateCompactReport возвращает вывод в формате file:line[:col]: message (ESLint-style).
+// Если задана колонка (Column > 0), выводится file:line:col: message.
 func GenerateCompactReport(file string, errors []pkg.Error) string {
 	var sb strings.Builder
 	for _, e := range errors {
 		if e.Line > 0 {
-			sb.WriteString(fmt.Sprintf("%s:%d: %s\n", file, e.Line, e.Message))
+			if e.Column > 0 {
+				sb.WriteString(fmt.Sprintf("%s:%d:%d: %s\n", file, e.Line, e.Column, e.Message))
+			} else {
+				sb.WriteString(fmt.Sprintf("%s:%d: %s\n", file, e.Line, e.Message))
+			}
 		} else {
 			sb.WriteString(fmt.Sprintf("%s: %s\n", file, e.Message))
 		}
