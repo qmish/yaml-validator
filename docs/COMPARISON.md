@@ -140,7 +140,7 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 1. **Правила стиля** — по образцу yamllint: document-start/end, quoted-strings, комментарии, key-ordering.
 2. **K8s-схема** — реализовано в v1.2.0: опциональная проверка по полной OpenAPI/схеме через kubeconform (`rules.k8s_schema.enabled`, конфиг `configs/k8s-strict.yaml`).
 3. **Правила стиля** — реализовано в v1.3.0: document-start, trailing spaces, newline at EOF (конфиг `style:`, `configs/strict.yaml`).
-4. **Inline-игнор** — комментарии в YAML для отключения правил (как в yamllint) — запланировано.
+4. **Inline-игнор** — реализовано в v1.4.0: `# yaml-validator disable-line rule:XXX`, `disable-next-line` (включается через `rules.inline_ignore`).
 4. **Больше форматов вывода** — например, SARIF для GitHub Advanced Security.
 
 При необходимости этот документ можно вынести в репозиторий (например, в `docs/COMPARISON.md`) и обновлять по мере развития инструмента.

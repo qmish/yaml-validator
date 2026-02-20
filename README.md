@@ -15,6 +15,7 @@
 - **Плагины** — расширяемость через `ValidatorPlugin` (встроенный плагин для Kubernetes)
 - **K8s по схеме** — опциональная проверка по полной OpenAPI/JSON Schema Kubernetes (типы полей, все ресурсы), через [kubeconform](https://github.com/yannh/kubeconform)
 - **Правила стиля** — document-start (`---`), запрет пробелов в конце строки, перевод строки в конце файла (опционально, конфиг `style:`)
+- **Inline-игнор** — отключение правил через комментарии: `# yaml-validator disable-line rule:LineTooLong`, `# yaml-validator disable-next-line rule:TrailingSpaces`
 - **Логирование** — verbose режим, JSON-логи для ELK/Loki
 
 ## Установка
@@ -71,10 +72,7 @@ rules:
     - apiVersion
     - kind
     - metadata.name
-  style:
-    require_document_start: false
-    forbid_trailing_spaces: false
-    require_newline_at_eof: false
+  inline_ignore: false
   style:
     require_document_start: false
     forbid_trailing_spaces: false

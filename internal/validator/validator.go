@@ -60,5 +60,9 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 	// Запуск зарегистрированных плагинов
 	allErrors = append(allErrors, RunPlugins(node)...)
 
+	if rules.InlineIgnore {
+		allErrors = FilterInlineIgnore(filename, allErrors)
+	}
+
 	return allErrors, nil
 }

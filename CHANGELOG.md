@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.4.0] - 2025-02-20
+
+### Добавлено
+
+- **Inline-игнор**: отключение правил через комментарии в YAML. Формат: `# yaml-validator disable-line [rule:RuleType]` и `# yaml-validator disable-next-line [rule:...]`. Включается через `rules.inline_ignore: true`.
+
 ## [1.3.0] - 2025-02-20
 
 ### Добавлено
