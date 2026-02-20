@@ -105,6 +105,7 @@ var configInitCmd = &cobra.Command{
   check_duplicates: true
   check_integrity: true
   check_common_errors: true
+  check_key_ordering: false
   inline_ignore: false
   style:
     require_document_start: false

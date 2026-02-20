@@ -29,6 +29,10 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckDuplicates(node)...)
 	}
 
+	if rules.CheckKeyOrdering {
+		allErrors = append(allErrors, CheckKeyOrdering(node)...)
+	}
+
 	if rules.CheckIntegrity {
 		fields := rules.RequiredFields
 		if len(fields) == 0 {
@@ -49,7 +53,8 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckCommonErrors(filename, maxLen, patterns)...)
 	}
 
-	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.RequireNewlineAtEof {
+	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.RequireNewlineAtEof ||
+		rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireDocumentEnd || rules.Style.RequireCommentsIndented {
 		allErrors = append(allErrors, CheckStyle(filename, rules.Style)...)
 	}
 

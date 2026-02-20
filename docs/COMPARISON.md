@@ -42,6 +42,7 @@
 | Пустые строки подряд  | ✅ empty-lines    | ✅ style.forbid_consecutive_empty_lines (v1.7.0) |
 | Trailing spaces       | ✅                | ✅ style.forbid_trailing_spaces    |
 | Отступ комментариев   | ✅ comment-indentation | ✅ style.require_comments_indented |
+| Порядок ключей        | ✅ key-ordering    | ✅ check_key_ordering               |
 | Inline disable        | ✅ disable-line    | ✅ disable-line / disable-next-line (v1.4.0) |
 | Синтаксис             | ✅                 | ✅ CheckSyntax                    |
 | Обязательные поля     | ❌                 | ✅ apiVersion, kind, metadata.name |
@@ -147,7 +148,7 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 
 ### Что можно усилить (по сравнению с другими)
 
-1. **Больше правил стиля** — добавлено: запрет подряд идущих пустых строк, document-end, отступ у комментариев (`require_comments_indented`). Длина строки через `max_line_length`. Возможные расширения: quoted-strings, key-ordering (как в yamllint).
+1. **Больше правил стиля** — добавлено: запрет подряд идущих пустых строк, document-end, отступ у комментариев, порядок ключей (`check_key_ordering`). Длина строки через `max_line_length`. Возможное расширение: quoted-strings (как в yamllint).
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
 3. **Доп. форматы** — реализовано: `-o compact` (файл:строка[:колонка]: сообщение), колонка выводится, когда доступна (например, DuplicateKey); SARIF использует startColumn.
 

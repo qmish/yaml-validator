@@ -31,6 +31,7 @@ type ValidationRules struct {
 	CheckDuplicates   bool              `yaml:"check_duplicates"`
 	CheckIntegrity    bool              `yaml:"check_integrity"`
 	CheckCommonErrors bool              `yaml:"check_common_errors"`
+	CheckKeyOrdering  bool              `yaml:"check_key_ordering"` // требовать лексикографический порядок ключей в маппингах
 	InlineIgnore     bool              `yaml:"inline_ignore"` // разрешить отключение правил через комментарии в YAML
 	Style             StyleOptions      `yaml:"style"`
 	K8sSchema        K8sSchemaOptions   `yaml:"k8s_schema"`
