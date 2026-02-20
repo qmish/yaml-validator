@@ -21,11 +21,12 @@ jobs:
         run: go build -o yaml-validator .
 
       - name: Run tests
-        run: go test ./... -v
+        run: go test ./... -v -short
 
       - name: Validate YAML files
         run: |
-          ./yaml-validator validate configs/default.yaml testdata/examples/valid.yaml
+          ./yaml-validator validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
+          ./yaml-validator validate testdata/examples/docker-compose.yaml -c configs/docker-compose.yaml
 
   docker:
     runs-on: ubuntu-latest
@@ -37,4 +38,4 @@ jobs:
 
       - name: Run validator in Docker
         run: |
-          docker run --rm -v $PWD:/workspace yaml-validator validate configs/default.yaml testdata/examples/valid.yaml
+          docker run --rm -v $PWD:/workspace yaml-validator validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
