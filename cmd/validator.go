@@ -75,6 +75,8 @@ var validateCmd = &cobra.Command{
 				case "junit":
 					report, _ := reporter.GenerateJUnitReport(file, errors)
 					fmt.Println(string(report))
+				case "compact":
+					reporter.PrintCompact(file, errors)
 				default:
 					reporter.PrintHumanReadable(file, errors)
 				}
@@ -165,7 +167,7 @@ func loadConfig() *config.Config {
 }
 
 func init() {
-	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif")
+	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, compact")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")

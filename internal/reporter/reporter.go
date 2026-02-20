@@ -23,6 +23,7 @@ const (
 	FormatJUnit         Format = "junit"
 	FormatSARIF         Format = "sarif"
 	FormatHumanReadable Format = "human"
+	FormatCompact       Format = "compact" // file:line: message (ESLint-style, для редакторов)
 )
 
 // GenerateJSONReport создаёт JSON-отчёт для интеграции с CI/CD
@@ -87,4 +88,22 @@ func PrintHumanReadable(file string, errors []pkg.Error) {
 			fmt.Printf("  %d. [%s] %s\n", i+1, e.Type, e.Message)
 		}
 	}
+}
+
+// GenerateCompactReport возвращает вывод в формате file:line: message (ESLint-style).
+func GenerateCompactReport(file string, errors []pkg.Error) string {
+	var sb strings.Builder
+	for _, e := range errors {
+		if e.Line > 0 {
+			sb.WriteString(fmt.Sprintf("%s:%d: %s\n", file, e.Line, e.Message))
+		} else {
+			sb.WriteString(fmt.Sprintf("%s: %s\n", file, e.Message))
+		}
+	}
+	return sb.String()
+}
+
+// PrintCompact выводит по одной строке на ошибку в формате file:line: message (ESLint-style).
+func PrintCompact(file string, errors []pkg.Error) {
+	fmt.Print(GenerateCompactReport(file, errors))
 }

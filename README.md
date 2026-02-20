@@ -42,6 +42,9 @@ yaml-validator validate config.yaml -o junit
 # Вывод в формате SARIF (для GitHub Code Scanning)
 yaml-validator validate config.yaml -o sarif > results.sarif
 
+# Компактный вывод file:line: message (для редакторов, парсеров)
+yaml-validator validate config.yaml -o compact
+
 # Использование конфигурационного файла
 yaml-validator validate config.yaml -c configs/default.yaml
 
