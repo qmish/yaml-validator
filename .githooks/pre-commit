@@ -1,0 +1,28 @@
+#!/bin/bash
+# Git pre-commit hook: проверка YAML-файлов перед коммитом
+# Установка: cp .githooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+
+VALIDATOR="./bin/yaml-validator"
+if [ ! -f "$VALIDATOR" ]; then
+  VALIDATOR="yaml-validator"
+fi
+
+echo "Running YAML validation..."
+failed=0
+
+for file in $(git diff --cached --name-only | grep -E '\.(yml|yaml)$'); do
+  if [ -f "$file" ]; then
+    $VALIDATOR validate "$file"
+    if [ $? -ne 0 ]; then
+      echo "Validation failed for $file"
+      failed=1
+    fi
+  fi
+done
+
+if [ $failed -eq 1 ]; then
+  echo "Fix validation errors before committing."
+  exit 1
+fi
+
+exit 0

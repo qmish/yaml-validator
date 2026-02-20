@@ -1,0 +1,13 @@
+# Локальное тестирование yaml-validator в Docker
+services:
+  validator:
+    build: .
+    volumes:
+      - .:/workspace:ro
+    working_dir: /workspace
+    command: validate configs/default.yaml testdata/examples/valid.yaml
+    profiles:
+      - test
+
+  # Запуск: docker compose --profile test run --rm validator
+  # Или:   docker compose --profile test run --rm validator validate path/to/file.yaml

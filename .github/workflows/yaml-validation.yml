@@ -1,0 +1,40 @@
+name: YAML Validation
+
+on: [push, pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: ['1.21', '1.22']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go ${{ matrix.go }}
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go }}
+          cache-dependency-path: go.sum
+
+      - name: Build
+        run: go build -o yaml-validator .
+
+      - name: Run tests
+        run: go test ./... -v
+
+      - name: Validate YAML files
+        run: |
+          ./yaml-validator validate configs/default.yaml testdata/examples/valid.yaml
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t yaml-validator .
+
+      - name: Run validator in Docker
+        run: |
+          docker run --rm -v $PWD:/workspace yaml-validator validate configs/default.yaml testdata/examples/valid.yaml

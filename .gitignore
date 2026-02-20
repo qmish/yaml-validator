@@ -1,0 +1,23 @@
+# Binaries
+bin/
+*.exe
+yaml-validator
+release-*/
+
+# Build output
+coverage.out
+coverage.html
+*.tar.gz
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config (local overrides)
+yaml-validator.yaml

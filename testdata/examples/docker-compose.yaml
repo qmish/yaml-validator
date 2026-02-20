@@ -1,0 +1,12 @@
+# Пример docker-compose.yml для тестирования
+version: "3.8"
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "80:80"
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: app
