@@ -1,0 +1,13 @@
+# Pre-commit: проверка YAML перед коммитом
+# Установка: pre-commit install
+# Требуется: yaml-validator в PATH (go build или установить бинарник)
+# См. https://pre-commit.com/
+
+repos:
+  - repo: local
+    hooks:
+      - id: yaml-validator
+        name: yaml-validator
+        entry: yaml-validator validate
+        language: system
+        types: [yaml]

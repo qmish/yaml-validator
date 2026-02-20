@@ -13,7 +13,7 @@
 | **kubeconform** | Go     | K8s OpenAPI        | Apache 2.0   |
 | **kube-score**  | Go     | K8s best practices | —            |
 | **yq**          | Go     | Запросы/формат     | MIT          |
-| **yaml-validator** (наш) | Go | Синтаксис, дубликаты, K8s-поля, **K8s OpenAPI-схема** (опц.), **правила стиля**, **inline-игнор**, **SARIF**, плагины | MIT |
+| **yaml-validator** (наш) | Go | Синтаксис, дубликаты, K8s-поля, K8s OpenAPI (kubeconform), правила стиля, inline-игнор, отчёты JSON/JUnit/SARIF, плагины, Docker, CI (Go 1.24) | MIT |
 
 ---
 
@@ -122,7 +122,7 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 | Схема K8s (типы, API)     | ❌       | ✅                   | ✅ опц. (v1.2.0, kubeconform) |
 | Чувствительные данные     | ❌       | ❌                   | ✅             |
 | Плагины / свои проверки   | ❌       | ❌                   | ✅             |
-| JSON/JUnit/SARIF отчёт    | огранич. | разное               | ✅             |
+| JSON/JUnit/SARIF отчёт    | огранич. | разное               | ✅ (v1.5.0 SARIF) |
 | Один бинарник (Go)        | ❌       | ✅                   | ✅             |
 | Любой YAML (не только K8s)| ✅       | ❌                   | ✅             |
 
@@ -135,15 +135,17 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 1. **Один бинарник на Go** — не нужен Python или внешний runtime, удобно в CI и контейнерах.
 2. **Расширяемость** — плагины (`ValidatorPlugin`), встроенный K8s-плагин.
 3. **Гибкий конфиг** — разные профили (K8s vs docker-compose, strict), свои обязательные поля и паттерны.
-4. **Отчёты для CI** — JSON и JUnit из коробки.
+4. **Отчёты для CI** — JSON, JUnit и **SARIF** (v1.5.0) для GitHub Code Scanning.
 5. **K8s по схеме** (v1.2.0) — опциональная полная проверка через kubeconform (`configs/k8s-strict.yaml`).
 6. **Правила стиля** (v1.3.0) — document-start, trailing spaces, newline at EOF (`configs/strict.yaml`).
 7. **Inline-игнор** (v1.4.0) — отключение правил через комментарии, как в yamllint.
 8. **Лицензия MIT** — проще использование в корпоративных проектах по сравнению с GPL.
+9. **Сборка и CI** (v1.5.1) — Docker на Go 1.24, GitHub Actions с явной версией Go, публикация образа в ghcr.io при релизе.
 
 ### Что можно усилить (по сравнению с другими)
 
-1. **Больше правил стиля** — quoted-strings, key-ordering, comment indentation (как в yamllint).
-2. **SARIF** — реализовано в v1.5.0: `-o sarif` для GitHub Code Scanning.
+1. **Больше правил стиля** — quoted-strings, key-ordering, comment indentation, настраиваемая длина строки по конфигу (как в yamllint).
+2. **Интеграции** — готовый pre-commit hook в репозитории, примеры для GitLab CI / Jenkins.
+3. **Доп. форматы** — вывод в стиле ESLint (файл:строка: сообщение) для удобства в редакторах.
 
-При необходимости этот документ можно вынести в репозиторий (например, в `docs/COMPARISON.md`) и обновлять по мере развития инструмента.
+Документ обновлён по состоянию v1.5.1.

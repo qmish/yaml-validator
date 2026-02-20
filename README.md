@@ -164,7 +164,7 @@ done
 
 ### GitHub Actions
 
-Проект включает workflow `.github/workflows/yaml-validation.yml` с матрицей Go 1.21/1.22 и сборкой Docker.
+Проект включает workflow `.github/workflows/yaml-validation.yml` (Go 1.24) и сборку Docker.
 
 ```yaml
 - name: Validate YAML
@@ -172,11 +172,13 @@ done
     ./yaml-validator validate **/*.yml **/*.yaml
 ```
 
-### Pre-commit hook
+### Pre-commit (framework)
+
+В репозитории есть [.pre-commit-config.yaml](.pre-commit-config.yaml) для [pre-commit](https://pre-commit.com/):
 
 ```bash
-cp .githooks/pre-commit .git/hooks/pre-commit
-chmod +x .git/hooks/pre-commit
+pre-commit install
+# yaml-validator должен быть в PATH (go build или установить бинарник)
 ```
 
 ### Docker
