@@ -13,6 +13,7 @@
 - **Логическая целостность** — обязательные поля (apiVersion, kind, metadata.name для Kubernetes), типы данных
 - **Распространённые ошибки** — табуляции вместо пробелов, слишком длинные строки (>200 символов), чувствительные данные (password, token и т.д.)
 - **Плагины** — расширяемость через `ValidatorPlugin` (встроенный плагин для Kubernetes)
+- **K8s по схеме** — опциональная проверка по полной OpenAPI/JSON Schema Kubernetes (типы полей, все ресурсы), через [kubeconform](https://github.com/yannh/kubeconform)
 - **Логирование** — verbose режим, JSON-логи для ELK/Loki
 
 ## Установка
@@ -56,8 +57,8 @@ yaml-validator validate config.yaml --log-json
 
 По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`.
 
-- **K8s-манифесты** — используйте конфиг по умолчанию (проверка apiVersion, kind, metadata.name).
-- **docker-compose и другой YAML** — используйте `-c configs/docker-compose.yaml` (без обязательных K8s-полей).
+- **K8s-манифесты** — конфиг по умолчанию (проверка apiVersion, kind, metadata.name). Для проверки по **полной схеме K8s** (типы, все ресурсы): `-c configs/k8s-strict.yaml` (при первом запуске возможна загрузка схем по сети).
+- **docker-compose и другой YAML** — `-c configs/docker-compose.yaml` (без обязательных K8s-полей).
 
 ```yaml
 rules:
@@ -69,6 +70,10 @@ rules:
     - apiVersion
     - kind
     - metadata.name
+  k8s_schema:
+    enabled: false
+    version: master
+    ignore_missing_schemas: true
   max_line_length: 200
   sensitive_patterns:
     - password
@@ -119,7 +124,7 @@ go test ./... -v
 # С покрытием: make test-coverage
 ```
 
-См. [CONTRIBUTING.md](CONTRIBUTING.md) для участия в разработке.
+См. [CONTRIBUTING.md](CONTRIBUTING.md) для участия в разработке. [Сравнение с другими инструментами](docs/COMPARISON.md) (yamllint, kubeval, kubeconform и др.).
 
 ## Интеграция с CI/CD
 

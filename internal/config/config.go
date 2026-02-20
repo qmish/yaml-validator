@@ -6,15 +6,25 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// K8sSchemaOptions настройки проверки по OpenAPI-схеме Kubernetes
+type K8sSchemaOptions struct {
+	Enabled    bool   `yaml:"enabled"`
+	Version    string `yaml:"version"`     // например "1.28", "master"
+	Strict     bool   `yaml:"strict"`      // отклонять недокументированные поля
+	CacheDir   string `yaml:"cache_dir"`   // кэш схем (пусто = в памяти)
+	IgnoreMissing bool `yaml:"ignore_missing_schemas"` // пропускать ресурсы без схемы (CRD)
+}
+
 // ValidationRules определяет правила валидации
 type ValidationRules struct {
-	CheckSyntax       bool     `yaml:"check_syntax"`
-	CheckDuplicates   bool     `yaml:"check_duplicates"`
-	CheckIntegrity    bool     `yaml:"check_integrity"`
-	CheckCommonErrors bool     `yaml:"check_common_errors"`
-	RequiredFields    []string `yaml:"required_fields"`
-	MaxLineLength     int      `yaml:"max_line_length"`
-	SensitivePatterns []string `yaml:"sensitive_patterns"`
+	CheckSyntax       bool              `yaml:"check_syntax"`
+	CheckDuplicates   bool              `yaml:"check_duplicates"`
+	CheckIntegrity    bool              `yaml:"check_integrity"`
+	CheckCommonErrors bool              `yaml:"check_common_errors"`
+	K8sSchema        K8sSchemaOptions   `yaml:"k8s_schema"`
+	RequiredFields    []string          `yaml:"required_fields"`
+	MaxLineLength     int               `yaml:"max_line_length"`
+	SensitivePatterns []string          `yaml:"sensitive_patterns"`
 }
 
 // Config основная структура конфигурации
@@ -42,6 +52,7 @@ func DefaultConfig() *Config {
 			CheckDuplicates:   true,
 			CheckIntegrity:    true,
 			CheckCommonErrors: true,
+			K8sSchema:        K8sSchemaOptions{Enabled: false, Version: "master", IgnoreMissing: true},
 			RequiredFields:    []string{"apiVersion", "kind", "metadata.name"},
 			MaxLineLength:     200,
 			SensitivePatterns: []string{"password", "secret", "token", "key"},

@@ -2,6 +2,14 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.2.0] - 2025-02-20
+
+### Добавлено
+
+- **Проверка по полной OpenAPI/схеме Kubernetes** (опционально): типы полей, все стандартные ресурсы K8s. Включается через `rules.k8s_schema.enabled: true` в конфиге. Используется [kubeconform](https://github.com/yannh/kubeconform).
+- Конфиг `configs/k8s-strict.yaml` для валидации K8s по схеме.
+- Параметры `k8s_schema`: `version`, `strict`, `cache_dir`, `ignore_missing_schemas` (CRD).
+
 ## [1.0.1] - 2025-02-20
 
 ### Исправлено

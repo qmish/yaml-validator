@@ -93,6 +93,12 @@ var configInitCmd = &cobra.Command{
   check_duplicates: true
   check_integrity: true
   check_common_errors: true
+  k8s_schema:
+    enabled: false
+    version: master
+    strict: false
+    cache_dir: ""
+    ignore_missing_schemas: true
   required_fields:
     - apiVersion
     - kind

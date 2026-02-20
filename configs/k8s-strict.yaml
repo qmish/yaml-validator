@@ -1,10 +1,11 @@
+# Конфигурация с проверкой по полной OpenAPI-схеме Kubernetes (типы полей, все ресурсы)
 rules:
   check_syntax: true
   check_duplicates: true
   check_integrity: true
   check_common_errors: true
   k8s_schema:
-    enabled: false
+    enabled: true
     version: master
     strict: false
     cache_dir: ""
