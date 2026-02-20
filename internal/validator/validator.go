@@ -49,6 +49,10 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckCommonErrors(filename, maxLen, patterns)...)
 	}
 
+	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.RequireNewlineAtEof {
+		allErrors = append(allErrors, CheckStyle(filename, rules.Style)...)
+	}
+
 	if rules.K8sSchema.Enabled {
 		allErrors = append(allErrors, CheckK8sSchema(filename, rules.K8sSchema)...)
 	}

@@ -15,12 +15,20 @@ type K8sSchemaOptions struct {
 	IgnoreMissing bool `yaml:"ignore_missing_schemas"` // пропускать ресурсы без схемы (CRD)
 }
 
+// StyleOptions правила стиля (в духе yamllint)
+type StyleOptions struct {
+	RequireDocumentStart bool `yaml:"require_document_start"` // требовать --- в начале файла
+	ForbidTrailingSpaces bool `yaml:"forbid_trailing_spaces"` // запрет пробелов в конце строки
+	RequireNewlineAtEof  bool `yaml:"require_newline_at_eof"` // требовать перевод строки в конце файла
+}
+
 // ValidationRules определяет правила валидации
 type ValidationRules struct {
 	CheckSyntax       bool              `yaml:"check_syntax"`
 	CheckDuplicates   bool              `yaml:"check_duplicates"`
 	CheckIntegrity    bool              `yaml:"check_integrity"`
 	CheckCommonErrors bool              `yaml:"check_common_errors"`
+	Style             StyleOptions      `yaml:"style"`
 	K8sSchema        K8sSchemaOptions   `yaml:"k8s_schema"`
 	RequiredFields    []string          `yaml:"required_fields"`
 	MaxLineLength     int               `yaml:"max_line_length"`
@@ -52,6 +60,7 @@ func DefaultConfig() *Config {
 			CheckDuplicates:   true,
 			CheckIntegrity:    true,
 			CheckCommonErrors: true,
+			Style:            StyleOptions{},
 			K8sSchema:        K8sSchemaOptions{Enabled: false, Version: "master", IgnoreMissing: true},
 			RequiredFields:    []string{"apiVersion", "kind", "metadata.name"},
 			MaxLineLength:     200,

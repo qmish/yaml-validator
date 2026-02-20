@@ -14,6 +14,7 @@
 - **Распространённые ошибки** — табуляции вместо пробелов, слишком длинные строки (>200 символов), чувствительные данные (password, token и т.д.)
 - **Плагины** — расширяемость через `ValidatorPlugin` (встроенный плагин для Kubernetes)
 - **K8s по схеме** — опциональная проверка по полной OpenAPI/JSON Schema Kubernetes (типы полей, все ресурсы), через [kubeconform](https://github.com/yannh/kubeconform)
+- **Правила стиля** — document-start (`---`), запрет пробелов в конце строки, перевод строки в конце файла (опционально, конфиг `style:`)
 - **Логирование** — verbose режим, JSON-логи для ELK/Loki
 
 ## Установка
@@ -70,6 +71,14 @@ rules:
     - apiVersion
     - kind
     - metadata.name
+  style:
+    require_document_start: false
+    forbid_trailing_spaces: false
+    require_newline_at_eof: false
+  style:
+    require_document_start: false
+    forbid_trailing_spaces: false
+    require_newline_at_eof: false
   k8s_schema:
     enabled: false
     version: master
