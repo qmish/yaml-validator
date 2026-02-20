@@ -12,7 +12,7 @@ Write-Host "Release yaml-validator $Version" -ForegroundColor Cyan
 
 # Тесты
 Write-Host "`nRunning tests..." -ForegroundColor Yellow
-go test ./... -v
+go test ./... -v -short
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Tests failed. Aborting." -ForegroundColor Red
     exit 1

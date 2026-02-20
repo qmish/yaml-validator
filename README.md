@@ -50,7 +50,8 @@ yaml-validator validate config.yaml --log-json
 
 По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`.
 
-Для docker-compose и не-K8s YAML используйте `configs/docker-compose.yaml` (без обязательных полей K8s).
+- **K8s-манифесты** — используйте конфиг по умолчанию (проверка apiVersion, kind, metadata.name).
+- **docker-compose и другой YAML** — используйте `-c configs/docker-compose.yaml` (без обязательных K8s-полей).
 
 ```yaml
 rules:
