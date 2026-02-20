@@ -175,6 +175,50 @@ done
     ./yaml-validator validate **/*.yml **/*.yaml
 ```
 
+### GitLab CI
+
+```yaml
+validate-yaml:
+  image: ghcr.io/qmish/yaml-validator:latest
+  script:
+    - yaml-validator validate "**/*.yml" "**/*.yaml"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+```
+
+Или с бинарником (скачать релиз):
+
+```yaml
+validate-yaml:
+  stage: test
+  script:
+    - curl -sSL https://github.com/qmish/yaml-validator/releases/download/v1.6.0/yaml-validator-v1.6.0-linux-amd64.tar.gz | tar xz -C /usr/local/bin
+    - yaml-validator validate **/*.yml **/*.yaml
+```
+
+### Jenkins
+
+```groovy
+stage('Validate YAML') {
+  steps {
+    sh '''
+      curl -sSL https://github.com/qmish/yaml-validator/releases/download/v1.6.0/yaml-validator-v1.6.0-linux-amd64.tar.gz | tar xz -C /tmp
+      /tmp/yaml-validator validate **/*.yml **/*.yaml
+    '''
+  }
+}
+```
+
+Или с Docker:
+
+```groovy
+stage('Validate YAML') {
+  steps {
+    sh 'docker run --rm -v ${WORKSPACE}:/workspace ghcr.io/qmish/yaml-validator:latest validate **/*.yml **/*.yaml'
+  }
+}
+```
+
 ### Pre-commit (framework)
 
 В репозитории есть [.pre-commit-config.yaml](.pre-commit-config.yaml) для [pre-commit](https://pre-commit.com/):
