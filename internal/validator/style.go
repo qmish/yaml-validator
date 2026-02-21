@@ -12,7 +12,7 @@ import (
 // CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys, indent step)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
-		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs {
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && opts.MinEmptyLinesBetweenBlocks <= 0 && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs {
 		return nil
 	}
 
@@ -108,7 +108,7 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 		}
 	}
 
-	if opts.RequireEmptyLineBetweenBlocks {
+	if opts.RequireEmptyLineBetweenBlocks || opts.MinEmptyLinesBetweenBlocks >= 1 {
 		var lastTopLevelKeyLine int
 		for i, line := range lines {
 			trimmed := strings.TrimSpace(line)
@@ -119,7 +119,6 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 			if indent != 0 {
 				continue
 			}
-			// top-level mapping key: contains : and key part before colon
 			keyPart := trimmed
 			if idx := strings.Index(trimmed, "#"); idx >= 0 {
 				keyPart = strings.TrimSpace(trimmed[:idx])
@@ -133,9 +132,13 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 						}
 					}
 					if emptyCount < 1 {
+						msg := "at least one empty line required between top-level blocks"
+						if opts.RequireEmptyLineBetweenBlocks {
+							msg = "exactly one empty line required between top-level blocks"
+						}
 						errors = append(errors, pkg.Error{
 							Type:       "EmptyLineBetweenBlocks",
-							Message:    "exactly one empty line required between top-level blocks",
+							Message:    msg,
 							Suggestion: "insert one empty line between blocks",
 							Line:       i + 1,
 						})

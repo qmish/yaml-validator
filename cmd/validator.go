@@ -131,6 +131,7 @@ var configInitCmd = &cobra.Command{
     forbid_consecutive_empty_lines: false
     forbid_tabs: false
     require_empty_line_between_blocks: false
+    min_empty_lines_between_blocks: 0
     require_document_end: false
     require_comments_indented: false
     require_quoted_keys: false

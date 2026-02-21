@@ -130,6 +130,27 @@ func TestCheckStyle_RequireEmptyLineBetweenBlocks(t *testing.T) {
 	assert.Equal(t, "EmptyLineBetweenBlocks", errors[0].Type)
 }
 
+func TestCheckStyle_MinEmptyLinesBetweenBlocks(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("a: 1\nb: 2\n"), 0644))
+
+	opts := config.StyleOptions{MinEmptyLinesBetweenBlocks: 1}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "EmptyLineBetweenBlocks", errors[0].Type)
+}
+
+func TestCheckStyle_MinEmptyLinesBetweenBlocks_Zero(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("a: 1\nb: 2\n"), 0644))
+
+	opts := config.StyleOptions{MinEmptyLinesBetweenBlocks: 0}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_RequireEmptyLineBetweenBlocks_Ok(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")
