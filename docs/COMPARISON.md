@@ -154,4 +154,4 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
 3. **Доп. форматы** — реализовано: `-o compact`, SARIF, **GitLab Code Quality** (`-o gitlab`), **GitHub Annotations** (`-o github-annotations`), **severity** (`-o severity`: `[ERROR] file:line: message`). Колонка в compact/SARIF, когда доступна.
 
-Документ обновлён по состоянию v1.20.0.
+Документ обновлён по состоянию v1.21.0.
