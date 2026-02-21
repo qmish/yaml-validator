@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.42.0] - 2026-02-21
+
+### Добавлено
+
+- **Запрет значений по умолчанию** (5.4) — правило `forbid_default_values` и `default_values`: запрет ключей со значением по умолчанию (для K8s: imagePullPolicy: Always, restartPolicy: Always, terminationGracePeriodSeconds: 30). Пример: `configs/k8s-forbid-defaults.yaml`.
+
 ## [1.41.0] - 2026-02-21
 
 ### Добавлено

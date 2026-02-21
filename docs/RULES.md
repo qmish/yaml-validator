@@ -15,6 +15,8 @@
 | **check_key_ordering** | `rules.check_key_ordering` | Требовать алфавитный порядок ключей. | Для K8s часто отключают в пользу `key_order`. |
 | **key_order** | `rules.key_order` | Приоритетный порядок ключей (не алфавитный). | `[apiVersion, kind, metadata, spec]`. |
 | **max_key_name_length** | `rules.max_key_name_length` | Максимальная длина имени ключа (0 = отключено). | `max_key_name_length: 50`. |
+| **forbid_default_values** | `rules.forbid_default_values` | Запрет ключей со значением по умолчанию (K8s: imagePullPolicy: Always и т.п.). | `default_values: {imagePullPolicy: "Always"}`. |
+| **default_values** | `rules.default_values` | Карта ключ → значение по умолчанию. Используется с `forbid_default_values`. | См. `configs/k8s-forbid-defaults.yaml`. |
 | **inline_ignore** | `rules.inline_ignore` | Разрешить отключение правил через комментарии в YAML. | `# yaml-validator disable-line rule:LineTooLong`. |
 | **required_fields** | `rules.required_fields` | Список обязательных полей (точечная нотация). | `[apiVersion, kind, metadata.name]`. |
 | **max_line_length** | `rules.max_line_length` | Максимальная длина строки в символах. | `200`. |
@@ -111,6 +113,6 @@ rules:
 
 ## Типы ошибок (Type)
 
-При валидации в отчётах фигурируют, в частности: `SyntaxError`, `DuplicateKey`, `MissingRequiredField`, `TabInsteadOfSpaces`, `LineTooLong`, `SensitiveData`, `KeyOrdering`, `KeyOrderConfigurable`, `MaxKeyNameLength`, `DocumentStart`, `TrailingSpaces`, `TrailingDots`, `NewlineAtEof`, `ConsecutiveEmptyLines`, `EmptyLineBetweenBlocks`, `DocumentEnd`, `CommentIndentation`, `QuotedKeys`, `QuotedValues`, `IndentSpaces`, `ForbidUnicode`, `ForbidBOM`, `DockerComposeServiceImage`, `JsonSchema`.
+При валидации в отчётах фигурируют, в частности: `SyntaxError`, `DuplicateKey`, `MissingRequiredField`, `TabInsteadOfSpaces`, `LineTooLong`, `SensitiveData`, `KeyOrdering`, `KeyOrderConfigurable`, `MaxKeyNameLength`, `ForbidDefaultValue`, `DocumentStart`, `TrailingSpaces`, `TrailingDots`, `NewlineAtEof`, `ConsecutiveEmptyLines`, `EmptyLineBetweenBlocks`, `DocumentEnd`, `CommentIndentation`, `QuotedKeys`, `QuotedValues`, `IndentSpaces`, `ForbidUnicode`, `ForbidBOM`, `DockerComposeServiceImage`, `JsonSchema`.
 
 Список правил в коде: `cmd/validator.go` (builtinRules), вывод: `yaml-validator rules list`.

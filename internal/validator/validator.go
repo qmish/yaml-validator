@@ -39,6 +39,10 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckMaxKeyNameLength(node, rules.MaxKeyNameLength)...)
 	}
 
+	if rules.ForbidDefaultValues && len(rules.DefaultValues) > 0 {
+		allErrors = append(allErrors, CheckForbidDefaultValues(node, rules.DefaultValues)...)
+	}
+
 	if rules.CheckIntegrity {
 		fields := rules.RequiredFields
 		if len(fields) == 0 {

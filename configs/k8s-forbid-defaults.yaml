@@ -1,0 +1,28 @@
+# K8s: запрет явного указания значений по умолчанию (5.4)
+# Использование: yaml-validator validate -c configs/k8s-forbid-defaults.yaml *.yaml
+#
+# Типичные значения по умолчанию в K8s:
+# - imagePullPolicy: Always
+# - restartPolicy: Always (для Pod)
+# - terminationGracePeriodSeconds: 30
+
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: true
+  check_common_errors: true
+  check_key_ordering: false
+  key_order:
+    - apiVersion
+    - kind
+    - metadata
+    - spec
+  forbid_default_values: true
+  default_values:
+    imagePullPolicy: "Always"
+    restartPolicy: "Always"
+    terminationGracePeriodSeconds: "30"
+  required_fields:
+    - apiVersion
+    - kind
+    - metadata.name

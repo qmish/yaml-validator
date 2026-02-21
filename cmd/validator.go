@@ -189,6 +189,8 @@ var configInitCmd = &cobra.Command{
   check_key_ordering: false
   key_order: []
   max_key_name_length: 0
+  forbid_default_values: false
+  default_values: {}
   inline_ignore: false
   style:
     require_document_start: false
@@ -258,6 +260,7 @@ var builtinRules = []RuleDescriptor{
 	{ID: "check_key_ordering", Description: "Порядок ключей (алфавитный)", ConfigKey: "rules.check_key_ordering"},
 	{ID: "key_order", Description: "Настраиваемый порядок ключей (key_order)", ConfigKey: "rules.key_order"},
 	{ID: "max_key_name_length", Description: "Максимальная длина имени ключа", ConfigKey: "rules.max_key_name_length"},
+	{ID: "forbid_default_values", Description: "Запрет ключей со значением по умолчанию (default_values)", ConfigKey: "rules.forbid_default_values"},
 	{ID: "inline_ignore", Description: "Комментарии для отключения правил в YAML", ConfigKey: "rules.inline_ignore"},
 	{ID: "require_document_start", Description: "Требовать --- в начале документа", ConfigKey: "rules.style.require_document_start"},
 	{ID: "forbid_trailing_spaces", Description: "Запрет пробелов в конце строки", ConfigKey: "rules.style.forbid_trailing_spaces"},
