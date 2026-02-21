@@ -42,8 +42,8 @@
 | 3.2 | **GitHub Actions CodeQL/SARIF** | Пример workflow для Code Scanning (`docs/code-scanning-example.yml`). | ✅ | v1.13.0 |
 | 3.3 | **Azure DevOps** | Пример pipeline для валидации YAML. | ✅ | v1.17.0 |
 | 3.4 | **Bitbucket Pipelines** | Пример pipeline для валидации YAML. | ✅ | v1.17.0 |
-| 3.5 | **GitLab CI (правило в .gitlab-ci.yml)** | Готовый фрагмент job для валидации YAML в docs. | ⬜ | — |
-| 3.6 | **Jenkinsfile** | Пример пайплайна с шагом валидации. | ⬜ | — |
+| 3.5 | **GitLab CI (правило в .gitlab-ci.yml)** | Готовый фрагмент job для валидации YAML в docs. | ✅ | v1.35.0 |
+| 3.6 | **Jenkinsfile** | Пример пайплайна с шагом валидации. | ✅ | v1.35.0 |
 | 3.7 | **pre-commit (official)** | Оформление хука как official pre-commit hook в отдельном репозитории или в доке. | ⬜ | — |
 | 3.8 | **VS Code / IDE** | Документация по использованию как линтера (задача или расширение). | ⬜ | — |
 
@@ -127,6 +127,7 @@
 | v1.32.0 | Разные exit code (2.5) | 2026-02-21 |
 | v1.33.0 | Режим --quiet (2.6) | 2026-02-21 |
 | v1.34.0 | Список правил rules list (2.7) | 2026-02-21 |
+| v1.35.0 | GitLab CI, Jenkinsfile (3.5, 3.6) | 2026-02-21 |
 | *далее* | — | — |
 
 ---

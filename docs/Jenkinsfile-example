@@ -1,0 +1,24 @@
+// Пример Jenkinsfile с шагом валидации YAML
+// Скопируйте в корень репозитория как Jenkinsfile или используйте как референс.
+// Требуется: Jenkins с Go plugin (или образ с Go) и yaml-validator в репозитории.
+
+pipeline {
+    agent any
+
+    tools {
+        go 'go-1.22'
+    }
+
+    stages {
+        stage('Build yaml-validator') {
+            steps {
+                sh 'go build -o yaml-validator .'
+            }
+        }
+        stage('Validate YAML') {
+            steps {
+                sh './yaml-validator validate "**/*.yml" "**/*.yaml" -o severity'
+            }
+        }
+    }
+}

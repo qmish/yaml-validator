@@ -1,0 +1,29 @@
+# Готовый фрагмент job для валидации YAML в GitLab CI
+# Добавьте в .gitlab-ci.yml или скопируйте как референс.
+# Требуется: yaml-validator — сборка из репозитория или скачать релиз.
+
+# Вариант 1: Простая валидация (вывод severity)
+yaml-validate:
+  image: golang:1.24-bookworm
+  stage: test
+  before_script:
+    - go build -o yaml-validator .
+  script:
+    - ./yaml-validator validate "**/*.yml" "**/*.yaml" -o severity
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+
+# Вариант 2: С отчётом GitLab Code Quality (gl-code-quality-report.json)
+# Раскомментируйте и настройте artifacts для интеграции с Merge Request.
+# yaml-validate-code-quality:
+#   image: golang:1.24-bookworm
+#   stage: test
+#   before_script:
+#     - go build -o yaml-validator .
+#   script:
+#     - ./yaml-validator validate "**/*.yml" "**/*.yaml" -o gitlab > gl-code-quality-report.json
+#   artifacts:
+#     reports:
+#       codequality: gl-code-quality-report.json
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event"

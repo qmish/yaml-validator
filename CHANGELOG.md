@@ -2,6 +2,13 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.35.0] - 2026-02-21
+
+### Добавлено
+
+- **GitLab CI** (3.5) — готовый фрагмент job для валидации YAML в `docs/gitlab-ci-example.yml`. Варианты: простая валидация (severity) и с отчётом Code Quality (gl-code-quality-report.json).
+- **Jenkinsfile** (3.6) — пример пайплайна Jenkins с шагом валидации YAML в `docs/Jenkinsfile-example`.
+
 ## [1.34.0] - 2026-02-21
 
 ### Добавлено
