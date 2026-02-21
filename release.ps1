@@ -54,4 +54,6 @@ Write-Host "Archive created: $archive" -ForegroundColor Green
 Write-Host "`nRelease $Version complete." -ForegroundColor Cyan
 Write-Host "Binaries: $releaseDir/"
 Write-Host "Archive:  $archive"
-Write-Host "`nTo publish: gh release create $Version $archive ./$releaseDir/ -n 'Release $Version'"
+$binFiles = Get-ChildItem -Path $releaseDir -File | ForEach-Object { $_.FullName }
+$ghArgs = @($archive) + $binFiles
+Write-Host "`nTo publish: gh release create $Version $($ghArgs -join ' ') -n 'Release $Version'"

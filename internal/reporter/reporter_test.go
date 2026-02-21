@@ -71,3 +71,20 @@ func TestGenerateCompactReport_Empty(t *testing.T) {
 	out := GenerateCompactReport("valid.yaml", nil)
 	assert.Empty(t, out)
 }
+
+func TestGenerateGitHubAnnotations(t *testing.T) {
+	errors := []pkg.Error{
+		{Type: "SyntaxError", Message: "invalid YAML", Line: 3},
+		{Type: "Other", Message: "no position", Line: 0},
+		{Type: "Percent", Message: "contains % sign", Line: 1},
+	}
+	out := GenerateGitHubAnnotations("app.yaml", errors)
+	assert.Contains(t, out, "::error file=app.yaml,line=3::invalid YAML")
+	assert.Contains(t, out, "::error file=app.yaml::no position")
+	assert.Contains(t, out, "::error file=app.yaml,line=1::contains %25 sign")
+}
+
+func TestGenerateGitHubAnnotations_Empty(t *testing.T) {
+	out := GenerateGitHubAnnotations("valid.yaml", nil)
+	assert.Empty(t, out)
+}
