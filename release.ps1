@@ -18,10 +18,12 @@ if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 
-# Сборка
+# Сборка (артефакты в docs/release)
 $binDir = "bin"
-$releaseDir = "release-$Version"
+$releaseBase = "docs/release"
+$releaseDir = "$releaseBase/release-$Version"
 if (-not (Test-Path $binDir)) { New-Item -ItemType Directory -Path $binDir | Out-Null }
+if (-not (Test-Path $releaseBase)) { New-Item -ItemType Directory -Path $releaseBase -Force | Out-Null }
 if (-not (Test-Path $releaseDir)) { New-Item -ItemType Directory -Path $releaseDir | Out-Null }
 
 $targets = @(
@@ -42,7 +44,7 @@ foreach ($t in $targets) {
 }
 
 # Архивирование
-$archive = "yaml-validator-$Version.tar.gz"
+$archive = "$releaseBase/yaml-validator-$Version.tar.gz"
 Write-Host "`nCreating archive $archive..." -ForegroundColor Yellow
 $files = Get-ChildItem -Path $releaseDir -File | ForEach-Object { $_.FullName }
 tar -czf $archive -C $releaseDir (Get-ChildItem $releaseDir -Name)

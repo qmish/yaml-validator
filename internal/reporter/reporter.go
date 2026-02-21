@@ -112,3 +112,14 @@ func GenerateCompactReport(file string, errors []pkg.Error) string {
 func PrintCompact(file string, errors []pkg.Error) {
 	fmt.Print(GenerateCompactReport(file, errors))
 }
+
+// PrintGitHubAnnotations выводит ошибки в формате GitHub Actions ::error file=...,line=...::
+func PrintGitHubAnnotations(file string, errors []pkg.Error) {
+	for _, e := range errors {
+		if e.Line > 0 {
+			fmt.Printf("::error file=%s,line=%d::%s\n", file, e.Line, strings.ReplaceAll(e.Message, "%", "%25"))
+		} else {
+			fmt.Printf("::error file=%s::%s\n", file, strings.ReplaceAll(e.Message, "%", "%25"))
+		}
+	}
+}

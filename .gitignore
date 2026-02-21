@@ -3,6 +3,8 @@ bin/
 *.exe
 yaml-validator
 release-*/
+docs/release/release-*/
+docs/release/*.tar.gz
 
 # Build output
 coverage.out

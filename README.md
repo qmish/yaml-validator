@@ -48,6 +48,9 @@ yaml-validator validate config.yaml -o gitlab > gl-code-quality-report.json
 # Компактный вывод file:line[:col]: message (для редакторов, парсеров; колонка выводится, когда известна)
 yaml-validator validate config.yaml -o compact
 
+# GitHub Actions annotations (::error file=...,line=...::)
+yaml-validator validate config.yaml -o github-annotations
+
 # Использование конфигурационного файла
 yaml-validator validate config.yaml -c configs/default.yaml
 
