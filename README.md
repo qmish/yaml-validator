@@ -76,7 +76,7 @@ yaml-validator validate config.yaml --log-json
 
 ## Конфигурация
 
-По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`.
+По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`. Справочник правил и опций: [docs/RULES.md](docs/RULES.md).
 
 - **Конфиг по имени файла** — в yaml-validator.yaml добавьте `file_profiles`:
 ```yaml
