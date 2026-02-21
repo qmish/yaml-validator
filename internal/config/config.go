@@ -68,6 +68,7 @@ type ValidationRules struct {
 	DefaultValues        map[string]string   `yaml:"default_values"`          // ключ -> значение по умолчанию
 	UniqueListFields     []UniqueListField     `yaml:"unique_list_fields"`       // уникальность элементов по полю (5.5)
 	KeyValuePatterns     []KeyValuePattern     `yaml:"key_value_patterns"`       // regexp для ключей/значений (5.6)
+	RuleSeverity         map[string]string     `yaml:"rule_severity"`            // rule Type -> "error"|"warning" (5.7)
 	InlineIgnore         bool                 `yaml:"inline_ignore"`             // разрешить отключение правил через комментарии в YAML
 	Style             StyleOptions      `yaml:"style"`
 	JsonSchema        JsonSchemaOptions `yaml:"json_schema"`

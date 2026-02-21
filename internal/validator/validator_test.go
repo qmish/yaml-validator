@@ -3,6 +3,7 @@ package validator
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -63,4 +64,29 @@ metadata:
 		types[e.Type] = true
 	}
 	assert.True(t, types["DuplicateKey"], "expected DuplicateKey error")
+}
+
+func TestValidate_RuleSeverity(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "long.yaml")
+	// Строка длиннее 80 символов
+	longLine := "key: value" + strings.Repeat("x", 80)
+	require.NoError(t, os.WriteFile(f, []byte(longLine), 0644))
+
+	cfg := config.DefaultConfig()
+	cfg.Rules.CheckIntegrity = false
+	cfg.Rules.RequiredFields = nil
+	cfg.Rules.MaxLineLength = 80
+	cfg.Rules.RuleSeverity = map[string]string{"LineTooLong": "warning"}
+
+	errors, err := Validate(f, cfg)
+	require.NoError(t, err)
+	require.NotEmpty(t, errors)
+	for _, e := range errors {
+		if e.Type == "LineTooLong" {
+			assert.Equal(t, "warning", e.Severity)
+			return
+		}
+	}
+	t.Fatal("expected LineTooLong error")
 }

@@ -78,15 +78,32 @@ func PrintHumanReadable(file string, errors []pkg.Error) {
 		fmt.Printf("✓ %s: valid\n", file)
 		return
 	}
-
-	fmt.Printf("✗ %s: %d error(s)\n", file, len(errors))
-	for i, e := range errors {
-		if e.Line > 0 {
-			fmt.Printf("  %d. [%s] %s (line %d)\n", i+1, e.Type, e.Message, e.Line)
-		} else if e.Path != "" {
-			fmt.Printf("  %d. [%s] %s (path: %s)\n", i+1, e.Type, e.Message, e.Path)
+	nErr, nWarn := 0, 0
+	for _, e := range errors {
+		if e.Severity == "warning" {
+			nWarn++
 		} else {
-			fmt.Printf("  %d. [%s] %s\n", i+1, e.Type, e.Message)
+			nErr++
+		}
+	}
+	if nWarn > 0 && nErr > 0 {
+		fmt.Printf("✗ %s: %d error(s), %d warning(s)\n", file, nErr, nWarn)
+	} else if nWarn > 0 {
+		fmt.Printf("⚠ %s: %d warning(s)\n", file, nWarn)
+	} else {
+		fmt.Printf("✗ %s: %d error(s)\n", file, nErr)
+	}
+	for i, e := range errors {
+		sev := ""
+		if e.Severity == "warning" {
+			sev = " [WARN]"
+		}
+		if e.Line > 0 {
+			fmt.Printf("  %d. [%s]%s %s (line %d)\n", i+1, e.Type, sev, e.Message, e.Line)
+		} else if e.Path != "" {
+			fmt.Printf("  %d. [%s]%s %s (path: %s)\n", i+1, e.Type, sev, e.Message, e.Path)
+		} else {
+			fmt.Printf("  %d. [%s]%s %s\n", i+1, e.Type, sev, e.Message)
 		}
 		if e.Suggestion != "" {
 			fmt.Printf("      To fix: %s\n", e.Suggestion)
@@ -117,15 +134,19 @@ func PrintCompact(file string, errors []pkg.Error) {
 	fmt.Print(GenerateCompactReport(file, errors))
 }
 
-// GenerateGitHubAnnotations возвращает вывод в формате GitHub Actions ::error file=...,line=...::
+// GenerateGitHubAnnotations возвращает вывод в формате GitHub Actions ::error/::warning file=...,line=...::
 func GenerateGitHubAnnotations(file string, errors []pkg.Error) string {
 	var sb strings.Builder
 	for _, e := range errors {
 		msg := strings.ReplaceAll(e.Message, "%", "%25")
+		level := "error"
+		if e.Severity == "warning" {
+			level = "warning"
+		}
 		if e.Line > 0 {
-			sb.WriteString(fmt.Sprintf("::error file=%s,line=%d::%s\n", file, e.Line, msg))
+			sb.WriteString(fmt.Sprintf("::%s file=%s,line=%d::%s\n", level, file, e.Line, msg))
 		} else {
-			sb.WriteString(fmt.Sprintf("::error file=%s::%s\n", file, msg))
+			sb.WriteString(fmt.Sprintf("::%s file=%s::%s\n", level, file, msg))
 		}
 	}
 	return sb.String()
@@ -140,7 +161,10 @@ func PrintGitHubAnnotations(file string, errors []pkg.Error) {
 func GenerateSeverityReport(file string, errors []pkg.Error) string {
 	var sb strings.Builder
 	for _, e := range errors {
-		sev := "[ERROR]" // все текущие ошибки — ERROR
+		sev := "[ERROR]"
+		if e.Severity == "warning" {
+			sev = "[WARN]"
+		}
 		if e.Line > 0 {
 			if e.Column > 0 {
 				sb.WriteString(fmt.Sprintf("%s %s:%d:%d: %s\n", sev, file, e.Line, e.Column, e.Message))

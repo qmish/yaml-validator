@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -62,6 +63,7 @@ var validateCmd = &cobra.Command{
 		exitCode := ExitOK
 		hasErrors := false
 		totalErrors := 0
+		totalWarnings := 0
 		var sarifResults []reporter.FileResult
 		var gitlabResults []reporter.FileResult
 		var checkstyleResults []reporter.FileResult
@@ -99,7 +101,16 @@ var validateCmd = &cobra.Command{
 				hasErrors = true
 				continue
 			}
-			logger.Debug("File %s: %d error(s)", file, len(errors))
+			logger.Debug("File %s: %d issue(s)", file, len(errors))
+
+			// 5.7: считаем errors и warnings
+			for _, e := range errors {
+				if e.Severity == "warning" {
+					totalWarnings++
+				} else {
+					totalErrors++
+				}
+			}
 
 			if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" {
 				switch outputFmt {
@@ -111,8 +122,6 @@ var validateCmd = &cobra.Command{
 					checkstyleResults = append(checkstyleResults, reporter.FileResult{File: absPath, Errors: errors})
 				}
 			}
-			totalErrors += len(errors)
-
 			if !quiet {
 				if outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
 					switch outputFmt {
@@ -134,15 +143,17 @@ var validateCmd = &cobra.Command{
 				}
 			}
 
-			if len(errors) > 0 {
+			if totalErrors > 0 {
 				hasErrors = true
 			}
 		}
 
-		if hasErrors {
+		// 5.7: exit code 0 OK, 1 errors (или parse/fix failure), 2 только warnings
+		if hasErrors || totalErrors > 0 {
 			exitCode = ExitErrors
+		} else if totalWarnings > 0 {
+			exitCode = ExitWarnings
 		}
-		// ExitWarnings (2) — для будущего, когда будут предупреждения (5.7)
 
 		if outputFmt == "sarif" && len(sarifResults) > 0 {
 			report, _ := reporter.GenerateSARIFReport(version, sarifResults)
@@ -158,15 +169,26 @@ var validateCmd = &cobra.Command{
 		}
 
 		if quiet {
-			// В режиме quiet — только итог (OK / N errors); для машинных форматов итог не выводим
+			// В режиме quiet — только итог (OK / N errors / M warnings); для машинных форматов итог не выводим
 			machineFormat := outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "json" || outputFmt == "junit"
 			if !machineFormat {
-				if hasErrors {
-					if totalErrors == 1 {
-						fmt.Println("1 error")
-					} else {
-						fmt.Printf("%d errors\n", totalErrors)
+				if totalErrors > 0 || totalWarnings > 0 {
+					parts := []string{}
+					if totalErrors > 0 {
+						if totalErrors == 1 {
+							parts = append(parts, "1 error")
+						} else {
+							parts = append(parts, fmt.Sprintf("%d errors", totalErrors))
+						}
 					}
+					if totalWarnings > 0 {
+						if totalWarnings == 1 {
+							parts = append(parts, "1 warning")
+						} else {
+							parts = append(parts, fmt.Sprintf("%d warnings", totalWarnings))
+						}
+					}
+					fmt.Println(strings.Join(parts, ", "))
 				} else {
 					fmt.Println("OK")
 				}
@@ -193,6 +215,7 @@ var configInitCmd = &cobra.Command{
   default_values: {}
   unique_list_fields: []
   key_value_patterns: []
+  rule_severity: {}
   inline_ignore: false
   style:
     require_document_start: false
@@ -265,6 +288,7 @@ var builtinRules = []RuleDescriptor{
 	{ID: "forbid_default_values", Description: "Запрет ключей со значением по умолчанию (default_values)", ConfigKey: "rules.forbid_default_values"},
 	{ID: "unique_list_fields", Description: "Уникальность элементов массива по полю (path, field)", ConfigKey: "rules.unique_list_fields"},
 	{ID: "key_value_patterns", Description: "Регулярки для ключей/значений (path, pattern, target)", ConfigKey: "rules.key_value_patterns"},
+	{ID: "rule_severity", Description: "Severity правил: Type -> error|warning (5.7)", ConfigKey: "rules.rule_severity"},
 	{ID: "inline_ignore", Description: "Комментарии для отключения правил в YAML", ConfigKey: "rules.inline_ignore"},
 	{ID: "require_document_start", Description: "Требовать --- в начале документа", ConfigKey: "rules.style.require_document_start"},
 	{ID: "forbid_trailing_spaces", Description: "Запрет пробелов в конце строки", ConfigKey: "rules.style.forbid_trailing_spaces"},

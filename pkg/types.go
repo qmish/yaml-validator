@@ -8,4 +8,5 @@ type Error struct {
 	Path       string `json:"path,omitempty"`
 	Line       int    `json:"line,omitempty"`
 	Column     int    `json:"column,omitempty"`
+	Severity   string `json:"severity,omitempty"` // "error" (default) или "warning" (5.7)
 }

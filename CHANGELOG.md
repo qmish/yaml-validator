@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.45.0] - 2026-02-21
+
+### Добавлено
+
+- **Предупреждения (severity)** (5.7) — правило `rule_severity` в конфиге: map Type → «error»|«warning». Поле `Severity` в `pkg.Error`. Exit code: 0 — OK, 1 — есть ошибки, 2 — только предупреждения. Форматы severity и github-annotations выводят [WARN] / ::warning для warnings. Пример: `configs/rule-severity-warnings.yaml`.
+
 ## [1.44.0] - 2026-02-21
 
 ### Добавлено

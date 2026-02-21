@@ -96,5 +96,17 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = FilterInlineIgnore(filename, allErrors)
 	}
 
+	// 5.7: применяем rule_severity — часть правил как warning
+	for i := range allErrors {
+		if allErrors[i].Severity != "" {
+			continue
+		}
+		if sv, ok := rules.RuleSeverity[allErrors[i].Type]; ok && sv == "warning" {
+			allErrors[i].Severity = "warning"
+		} else {
+			allErrors[i].Severity = "error"
+		}
+	}
+
 	return allErrors, nil
 }

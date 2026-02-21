@@ -1,0 +1,15 @@
+# Правила как warnings (5.7)
+# Использование: yaml-validator validate -c configs/rule-severity-warnings.yaml *.yaml
+#
+# LineTooLong и KeyOrdering — как warnings (exit code 2 при отсутствии errors)
+
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: true
+  check_common_errors: true
+  max_line_length: 80
+  rule_severity:
+    LineTooLong: warning
+    KeyOrdering: warning
+    KeyOrderConfigurable: warning
