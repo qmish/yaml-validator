@@ -253,6 +253,10 @@ stage('Validate YAML') {
 }
 ```
 
+### VS Code / IDE
+
+Использование как линтера: [docs/ide.md](docs/ide.md) — VS Code (tasks, Run on Save), JetBrains (External Tools), Sublime, Vim.
+
 ### Pre-commit (official)
 
 yaml-validator — [official pre-commit hook](docs/pre-commit.md). Добавьте в `.pre-commit-config.yaml`:
