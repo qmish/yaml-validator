@@ -53,9 +53,14 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckCommonErrors(filename, maxLen, patterns)...)
 	}
 
-	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.RequireNewlineAtEof ||
-		rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireDocumentEnd || rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys {
+	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.ForbidTrailingDots ||
+		rules.Style.RequireNewlineAtEof || rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireDocumentEnd ||
+		rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys {
 		allErrors = append(allErrors, CheckStyle(filename, rules.Style)...)
+	}
+
+	if rules.Style.RequireQuotedValues {
+		allErrors = append(allErrors, CheckQuotedValues(node)...)
 	}
 
 	if rules.K8sSchema.Enabled {

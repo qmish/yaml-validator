@@ -8,9 +8,10 @@ import (
 	"yaml-validator/pkg"
 )
 
-// CheckStyle проверяет правила стиля (document-start/end, trailing spaces, newline at EOF, consecutive empty lines, comment indentation, quoted keys)
+// CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
-	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.RequireNewlineAtEof && !opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys {
+	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys {
 		return nil
 	}
 
@@ -41,6 +42,19 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				errors = append(errors, pkg.Error{
 					Type:    "TrailingSpaces",
 					Message: "trailing spaces at end of line",
+					Line:    i + 1,
+				})
+			}
+		}
+	}
+
+	if opts.ForbidTrailingDots {
+		for i, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			if trimmed != "" && trimmed != "..." && strings.HasSuffix(trimmed, ".") {
+				errors = append(errors, pkg.Error{
+					Type:    "TrailingDots",
+					Message: "forbid trailing dots at end of line",
 					Line:    i + 1,
 				})
 			}

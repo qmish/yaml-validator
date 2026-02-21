@@ -124,11 +124,13 @@ var configInitCmd = &cobra.Command{
   style:
     require_document_start: false
     forbid_trailing_spaces: false
+    forbid_trailing_dots: false
     require_newline_at_eof: false
     forbid_consecutive_empty_lines: false
     require_document_end: false
     require_comments_indented: false
     require_quoted_keys: false
+    require_quoted_values: false
   k8s_schema:
     enabled: false
     version: master
