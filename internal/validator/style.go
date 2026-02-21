@@ -12,7 +12,7 @@ import (
 // CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys, indent step)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
-		!opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 {
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 {
 		return nil
 	}
 
@@ -91,6 +91,44 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				}
 			} else {
 				emptyCount = 0
+			}
+		}
+	}
+
+	if opts.RequireEmptyLineBetweenBlocks {
+		var lastTopLevelKeyLine int
+		for i, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			if trimmed == "" || strings.HasPrefix(trimmed, "#") || trimmed == "---" || trimmed == "..." {
+				continue
+			}
+			indent := len(line) - len(strings.TrimLeft(line, " \t"))
+			if indent != 0 {
+				continue
+			}
+			// top-level mapping key: contains : and key part before colon
+			keyPart := trimmed
+			if idx := strings.Index(trimmed, "#"); idx >= 0 {
+				keyPart = strings.TrimSpace(trimmed[:idx])
+			}
+			if idx := strings.Index(keyPart, ":"); idx > 0 {
+				if lastTopLevelKeyLine > 0 {
+					emptyCount := 0
+					for j := lastTopLevelKeyLine; j < i; j++ {
+						if strings.TrimSpace(lines[j]) == "" {
+							emptyCount++
+						}
+					}
+					if emptyCount < 1 {
+						errors = append(errors, pkg.Error{
+							Type:       "EmptyLineBetweenBlocks",
+							Message:    "exactly one empty line required between top-level blocks",
+							Suggestion: "insert one empty line between blocks",
+							Line:       i + 1,
+						})
+					}
+				}
+				lastTopLevelKeyLine = i + 1
 			}
 		}
 	}

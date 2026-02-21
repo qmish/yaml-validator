@@ -40,6 +40,7 @@
 | document-start / EOF  | ✅                | ✅ style (v1.3.0)                  |
 | document-end (...)    | ✅                | ✅ style.require_document_end (v1.8.0) |
 | Пустые строки подряд  | ✅ empty-lines    | ✅ style.forbid_consecutive_empty_lines (v1.7.0) |
+| Одна пустая строка между блоками | ❌ | ✅ style.require_empty_line_between_blocks (v1.24.0) |
 | Trailing spaces       | ✅                | ✅ style.forbid_trailing_spaces    |
 | Отступ комментариев   | ✅ comment-indentation | ✅ style.require_comments_indented |
 | Порядок ключей        | ✅ key-ordering    | ✅ check_key_ordering, key_order (v1.19.0) |

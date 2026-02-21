@@ -97,6 +97,28 @@ func TestCheckStyle_ConsecutiveEmptyLines_Ok(t *testing.T) {
 	assert.Empty(t, errors)
 }
 
+func TestCheckStyle_RequireEmptyLineBetweenBlocks(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	// два топ-уровневых ключа без пустой строки между ними
+	require.NoError(t, os.WriteFile(f, []byte("apiVersion: v1\nkind: Pod\nmetadata:\n  name: x\n"), 0644))
+
+	opts := config.StyleOptions{RequireEmptyLineBetweenBlocks: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 2) // kind без разрыва после apiVersion, metadata без разрыва после kind
+	assert.Equal(t, "EmptyLineBetweenBlocks", errors[0].Type)
+}
+
+func TestCheckStyle_RequireEmptyLineBetweenBlocks_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("apiVersion: v1\n\nkind: Pod\n\nmetadata:\n  name: x\n"), 0644))
+
+	opts := config.StyleOptions{RequireEmptyLineBetweenBlocks: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_RequireDocumentEnd(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

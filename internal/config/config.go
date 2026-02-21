@@ -21,7 +21,8 @@ type StyleOptions struct {
 	ForbidTrailingSpaces       bool `yaml:"forbid_trailing_spaces"`       // запрет пробелов в конце строки
 	ForbidTrailingDots         bool `yaml:"forbid_trailing_dots"`         // запрет точек в конце строки
 	RequireNewlineAtEof        bool `yaml:"require_newline_at_eof"`       // требовать перевод строки в конце файла
-	ForbidConsecutiveEmptyLines bool `yaml:"forbid_consecutive_empty_lines"` // запрет более одной пустой строки подряд
+	ForbidConsecutiveEmptyLines     bool `yaml:"forbid_consecutive_empty_lines"`     // запрет более одной пустой строки подряд
+	RequireEmptyLineBetweenBlocks   bool `yaml:"require_empty_line_between_blocks"`  // ровно одна пустая строка между топ-уровневыми блоками
 	RequireDocumentEnd  bool `yaml:"require_document_end"` // требовать ... в конце файла (много-документный YAML)
 	RequireCommentsIndented bool `yaml:"require_comments_indented"` // комментарии внутри блока должны иметь отступ (как в yamllint)
 	RequireQuotedKeys    bool `yaml:"require_quoted_keys"`    // ключи маппинга должны быть в кавычках
