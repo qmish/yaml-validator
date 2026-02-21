@@ -1,0 +1,25 @@
+# Пример pipeline для Bitbucket Pipelines (YAML валидация)
+# Скопируйте в bitbucket-pipelines.yml или используйте как референс.
+# Требуется: yaml-validator — сборка из репозитория или скачать релиз.
+
+image: golang:1.24-bookworm
+
+pipelines:
+  default:
+    - step:
+        name: Validate YAML
+        caches:
+          - go
+        script:
+          - go build -o yaml-validator .
+          - ./yaml-validator validate "**/*.yml" "**/*.yaml" -o severity
+
+  branches:
+    main:
+      - step:
+          name: Validate YAML
+          caches:
+            - go
+          script:
+            - go build -o yaml-validator .
+            - ./yaml-validator validate "**/*.yml" "**/*.yaml" -o severity

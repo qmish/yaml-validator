@@ -131,3 +131,26 @@ func GenerateGitHubAnnotations(file string, errors []pkg.Error) string {
 func PrintGitHubAnnotations(file string, errors []pkg.Error) {
 	fmt.Print(GenerateGitHubAnnotations(file, errors))
 }
+
+// GenerateSeverityReport возвращает вывод [ERROR] file:line: message / [WARN] для скриптов и CI.
+func GenerateSeverityReport(file string, errors []pkg.Error) string {
+	var sb strings.Builder
+	for _, e := range errors {
+		sev := "[ERROR]" // все текущие ошибки — ERROR
+		if e.Line > 0 {
+			if e.Column > 0 {
+				sb.WriteString(fmt.Sprintf("%s %s:%d:%d: %s\n", sev, file, e.Line, e.Column, e.Message))
+			} else {
+				sb.WriteString(fmt.Sprintf("%s %s:%d: %s\n", sev, file, e.Line, e.Message))
+			}
+		} else {
+			sb.WriteString(fmt.Sprintf("%s %s: %s\n", sev, file, e.Message))
+		}
+	}
+	return sb.String()
+}
+
+// PrintSeverity выводит ошибки в формате [ERROR] file:line: message.
+func PrintSeverity(file string, errors []pkg.Error) {
+	fmt.Print(GenerateSeverityReport(file, errors))
+}

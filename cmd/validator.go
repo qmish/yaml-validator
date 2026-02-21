@@ -85,6 +85,8 @@ var validateCmd = &cobra.Command{
 					reporter.PrintCompact(file, errors)
 				case "github-annotations":
 					reporter.PrintGitHubAnnotations(file, errors)
+				case "severity":
+					reporter.PrintSeverity(file, errors)
 				default:
 					reporter.PrintHumanReadable(file, errors)
 				}
@@ -184,7 +186,7 @@ func loadConfig() *config.Config {
 }
 
 func init() {
-	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, compact, gitlab, github-annotations")
+	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, compact, gitlab, github-annotations, severity")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")

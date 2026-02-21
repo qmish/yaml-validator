@@ -1,0 +1,15 @@
+#!/bin/bash
+# Standalone pre-commit hook для yaml-validator
+# Установка: cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Требуется: yaml-validator в PATH (go build или скачать релиз)
+
+set -e
+failed=0
+for file in $(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(yml|yaml)$'); do
+  if [ -f "$file" ]; then
+    if ! yaml-validator validate "$file"; then
+      failed=1
+    fi
+  fi
+done
+exit $failed

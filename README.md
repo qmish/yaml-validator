@@ -51,6 +51,9 @@ yaml-validator validate config.yaml -o compact
 # GitHub Actions annotations (::error file=...,line=...::)
 yaml-validator validate config.yaml -o github-annotations
 
+# Текстовый формат с severity [ERROR] file:line: message (для скриптов, CI)
+yaml-validator validate config.yaml -o severity
+
 # Использование конфигурационного файла
 yaml-validator validate config.yaml -c configs/default.yaml
 

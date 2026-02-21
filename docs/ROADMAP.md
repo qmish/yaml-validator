@@ -21,7 +21,7 @@
 |---|-------|----------|--------|-------|
 | 2.1 | **GitLab Code Quality (JSON)** | Формат `gl-code-quality-report.json` для GitLab CI (`-o gitlab`). | ✅ | v1.13.0 |
 | 2.2 | **GitHub Annotations** | Строки вида `::error file=...,line=...::` для GitHub Actions (`-o github-annotations`). | ✅ | v1.14.0 |
-| 2.3 | **Текстовый формат с severity** | `[ERROR] file:line: message` / `[WARN]` для скриптов и CI. | ⬜ | — |
+| 2.3 | **Текстовый формат с severity** | `[ERROR] file:line: message` / `[WARN]` для скриптов и CI. | ✅ | v1.17.0 |
 
 ---
 
@@ -31,8 +31,8 @@
 |---|-------|----------|--------|-------|
 | 3.1 | **Makefile** | Цель `make validate` по умолчанию. | ✅ | — |
 | 3.2 | **GitHub Actions CodeQL/SARIF** | Пример workflow для Code Scanning (`docs/code-scanning-example.yml`). | ✅ | v1.13.0 |
-| 3.3 | **Azure DevOps** | Пример pipeline для валидации YAML. | ⬜ | — |
-| 3.4 | **Bitbucket Pipelines** | Пример pipeline для валидации YAML. | ⬜ | — |
+| 3.3 | **Azure DevOps** | Пример pipeline для валидации YAML. | ✅ | v1.17.0 |
+| 3.4 | **Bitbucket Pipelines** | Пример pipeline для валидации YAML. | ✅ | v1.17.0 |
 
 ---
 
@@ -41,7 +41,7 @@
 | # | Пункт | Описание | Статус | Релиз |
 |---|-------|----------|--------|-------|
 | 4.1 | **Подсказка по исправлению** | В сообщениях об ошибках предлагать, как исправить (по аналогии с gofmt). | ⬜ | — |
-| 4.2 | **Официальный pre-commit hook** | Скрипт/рецепт в отдельной папке, подключаемый без `.pre-commit-config.yaml`. | 🟨 есть `.pre-commit-config.yaml` | — |
+| 4.2 | **Официальный pre-commit hook** | Скрипт/рецепт в отдельной папке, подключаемый без `.pre-commit-config.yaml`. | ✅ | v1.17.0 |
 | 4.3 | **Benchmark / performance** | Тесты производительности и оптимизация для очень больших YAML. | ⬜ | — |
 
 ---
@@ -74,7 +74,8 @@
 | v1.14.0 | GitHub Annotations, артефакты в docs/release | 2026-02-20 |
 | v1.15.0 | Тесты PrintGitHubAnnotations, release.ps1 gh command | 2026-02-21 |
 | v1.16.0 | docs/ROADMAP.md — чек-лист плана | 2026-02-21 |
-| *далее* | Правила (1.x), форматы (2.3), интеграции (3.3–3.4), docs (4.x), доп. правила (5.x), плагины (6.x) | — |
+| v1.17.0 | severity format, Azure DevOps, Bitbucket, standalone pre-commit hook | 2026-02-21 |
+| *далее* | Правила (1.x), docs (4.1, 4.3), доп. правила (5.x), плагины (6.x) | — |
 
 ---
 

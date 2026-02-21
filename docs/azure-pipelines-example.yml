@@ -1,0 +1,24 @@
+# Пример pipeline для Azure DevOps (YAML валидация)
+# Скопируйте в azure-pipelines.yml или добавьте как job в ваш pipeline.
+# Требуется: yaml-validator в PATH или сборка из репозитория.
+
+trigger:
+  - main
+  - develop
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: GoTool@0
+    inputs:
+      version: "1.24"
+    displayName: "Install Go"
+
+  - script: |
+      go build -o yaml-validator .
+    displayName: "Build yaml-validator"
+
+  - script: |
+      ./yaml-validator validate "**/*.yml" "**/*.yaml" -o severity
+    displayName: "Validate YAML files"

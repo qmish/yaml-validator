@@ -2,6 +2,15 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.17.0] - 2026-02-21
+
+### Добавлено
+
+- **Формат severity** — вывод `-o severity`: `[ERROR] file:line: message` для скриптов и CI.
+- **Azure DevOps** — пример pipeline (`docs/azure-pipelines-example.yml`).
+- **Bitbucket Pipelines** — пример pipeline (`docs/bitbucket-pipelines-example.yml`).
+- **Standalone pre-commit hook** — `hooks/pre-commit`, подключаемый без pre-commit framework.
+
 ## [1.16.0] - 2026-02-21
 
 ### Добавлено

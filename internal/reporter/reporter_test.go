@@ -88,3 +88,20 @@ func TestGenerateGitHubAnnotations_Empty(t *testing.T) {
 	out := GenerateGitHubAnnotations("valid.yaml", nil)
 	assert.Empty(t, out)
 }
+
+func TestGenerateSeverityReport(t *testing.T) {
+	errors := []pkg.Error{
+		{Type: "SyntaxError", Message: "invalid YAML", Line: 3},
+		{Type: "DuplicateKey", Message: "Duplicate key 'x'", Line: 5, Column: 2},
+		{Type: "Other", Message: "no position", Line: 0},
+	}
+	out := GenerateSeverityReport("app.yaml", errors)
+	assert.Contains(t, out, "[ERROR] app.yaml:3: invalid YAML")
+	assert.Contains(t, out, "[ERROR] app.yaml:5:2: Duplicate key 'x'")
+	assert.Contains(t, out, "[ERROR] app.yaml: no position")
+}
+
+func TestGenerateSeverityReport_Empty(t *testing.T) {
+	out := GenerateSeverityReport("valid.yaml", nil)
+	assert.Empty(t, out)
+}
