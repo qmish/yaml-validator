@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>yaml-validator</id>
+    <version>1.50.0</version>
+    <packageSourceUrl>https://github.com/qmish/yaml-validator</packageSourceUrl>
+    <owners>qmish</owners>
+    <title>yaml-validator</title>
+    <authors>yaml-validator contributors</authors>
+    <projectUrl>https://github.com/qmish/yaml-validator</projectUrl>
+    <licenseUrl>https://github.com/qmish/yaml-validator/blob/main/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>YAML validation tool for DevOps</summary>
+    <description>CLI tool for validating YAML files: syntax, duplicates, integrity, style rules, K8s, docker-compose, Ansible.</description>
+    <releaseNotes>https://github.com/qmish/yaml-validator/releases</releaseNotes>
+    <tags>yaml validator devops kubernetes</tags>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

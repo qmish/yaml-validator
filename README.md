@@ -28,6 +28,8 @@ go build -o yaml-validator .
 # Windows: .\build.ps1
 ```
 
+Пакеты для дистрибутивов (.deb, .rpm, Homebrew, Chocolatey): [docs/DISTRIBUTION.md](docs/DISTRIBUTION.md)
+
 ## Использование
 
 ```bash

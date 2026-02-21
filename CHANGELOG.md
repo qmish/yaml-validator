@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.50.0] - 2026-02-21
+
+### Добавлено
+
+- **Пакеты для дистрибутивов** (7.2) — документ `docs/DISTRIBUTION.md`: инструкции для .deb, .rpm, Homebrew, Chocolatey. Скрипты `scripts/packaging/build-deb.sh`, `build-rpm.sh`, формула Homebrew и nuspec для Chocolatey.
+
 ## [1.49.0] - 2026-02-21
 
 ### Добавлено
