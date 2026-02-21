@@ -81,6 +81,46 @@ func TraverseMappings(node *yaml.Node, path string, callback func(node *yaml.Nod
 	}
 }
 
+// TraverseSequences обходит дерево и для каждого SequenceNode вызывает callback(seqNode, path).
+// path — путь к массиву (напр. "spec.template.spec.containers").
+func TraverseSequences(node *yaml.Node, path string, callback func(seqNode *yaml.Node, seqPath string)) {
+	if node == nil {
+		return
+	}
+	if node.Kind == yaml.SequenceNode {
+		callback(node, path)
+		for j, child := range node.Content {
+			newPath := fmt.Sprintf("%s[%d]", path, j)
+			TraverseSequences(child, newPath, callback)
+		}
+		return
+	}
+	if node.Kind == yaml.MappingNode {
+		for i := 0; i < len(node.Content); i += 2 {
+			if i+1 < len(node.Content) {
+				key := node.Content[i].Value
+				newPath := path
+				if path != "" {
+					newPath = path + "." + key
+				} else {
+					newPath = key
+				}
+				TraverseSequences(node.Content[i+1], newPath, callback)
+			}
+		}
+		return
+	}
+	if node.Kind == yaml.DocumentNode {
+		for _, child := range node.Content {
+			TraverseSequences(child, path, callback)
+		}
+		return
+	}
+	for _, child := range node.Content {
+		TraverseSequences(child, path, callback)
+	}
+}
+
 // GetRootMapping возвращает корневой MappingNode из документа
 func GetRootMapping(node *yaml.Node) *yaml.Node {
 	if node == nil {

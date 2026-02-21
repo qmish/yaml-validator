@@ -43,6 +43,10 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckForbidDefaultValues(node, rules.DefaultValues)...)
 	}
 
+	if len(rules.UniqueListFields) > 0 {
+		allErrors = append(allErrors, CheckUniqueListFields(node, rules.UniqueListFields)...)
+	}
+
 	if rules.CheckIntegrity {
 		fields := rules.RequiredFields
 		if len(fields) == 0 {

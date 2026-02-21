@@ -1,0 +1,25 @@
+# K8s: уникальность имён контейнеров (5.5)
+# Использование: yaml-validator validate -c configs/k8s-unique-containers.yaml *.yaml
+#
+# Проверяет, что имена контейнеров в spec.template.spec.containers не повторяются.
+
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: true
+  check_common_errors: true
+  check_key_ordering: false
+  key_order:
+    - apiVersion
+    - kind
+    - metadata
+    - spec
+  unique_list_fields:
+    - path: "spec.template.spec.containers"
+      field: "name"
+    - path: "spec.volumes"
+      field: "name"
+  required_fields:
+    - apiVersion
+    - kind
+    - metadata.name

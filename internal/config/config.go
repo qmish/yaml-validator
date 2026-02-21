@@ -42,6 +42,12 @@ type StyleOptions struct {
 	ForbidBOM            bool `yaml:"forbid_bom"`              // запрет BOM (Byte Order Mark) в начале файла
 }
 
+// UniqueListField — правило уникальности элементов массива по полю (5.5)
+type UniqueListField struct {
+	Path  string `yaml:"path"`  // путь к массиву, напр. "spec.template.spec.containers"
+	Field string `yaml:"field"` // поле для проверки уникальности, напр. "name"
+}
+
 // ValidationRules определяет правила валидации
 type ValidationRules struct {
 	CheckSyntax       bool              `yaml:"check_syntax"`
@@ -51,9 +57,10 @@ type ValidationRules struct {
 	CheckKeyOrdering   bool     `yaml:"check_key_ordering"`   // требовать лексикографический порядок ключей
 	KeyOrder             []string          `yaml:"key_order"`               // приоритетный порядок ключей (напр. apiVersion, kind, metadata, spec)
 	MaxKeyNameLength     int               `yaml:"max_key_name_length"`     // максимальная длина имён ключей (0 = отключено)
-	ForbidDefaultValues  bool              `yaml:"forbid_default_values"`   // запрет ключей со значением по умолчанию (5.4)
-	DefaultValues        map[string]string `yaml:"default_values"`          // ключ -> значение по умолчанию (напр. imagePullPolicy: Always)
-	InlineIgnore       bool     `yaml:"inline_ignore"`        // разрешить отключение правил через комментарии в YAML
+	ForbidDefaultValues  bool                `yaml:"forbid_default_values"`   // запрет ключей со значением по умолчанию (5.4)
+	DefaultValues        map[string]string   `yaml:"default_values"`          // ключ -> значение по умолчанию
+	UniqueListFields    []UniqueListField    `yaml:"unique_list_fields"`      // уникальность элементов по полю (5.5)
+	InlineIgnore        bool                `yaml:"inline_ignore"`            // разрешить отключение правил через комментарии в YAML
 	Style             StyleOptions      `yaml:"style"`
 	JsonSchema        JsonSchemaOptions `yaml:"json_schema"`
 	K8sSchema        K8sSchemaOptions   `yaml:"k8s_schema"`
