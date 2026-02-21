@@ -6,6 +6,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// JsonSchemaOptions настройки проверки по произвольной JSON Schema
+type JsonSchemaOptions struct {
+	Enabled    bool   `yaml:"enabled"`
+	SchemaPath string `yaml:"schema_path"` // путь к файлу схемы (JSON или YAML)
+}
+
 // K8sSchemaOptions настройки проверки по OpenAPI-схеме Kubernetes
 type K8sSchemaOptions struct {
 	Enabled    bool   `yaml:"enabled"`
@@ -41,6 +47,7 @@ type ValidationRules struct {
 	MaxKeyNameLength   int      `yaml:"max_key_name_length"`  // максимальная длина имён ключей (0 = отключено)
 	InlineIgnore       bool     `yaml:"inline_ignore"`        // разрешить отключение правил через комментарии в YAML
 	Style             StyleOptions      `yaml:"style"`
+	JsonSchema        JsonSchemaOptions `yaml:"json_schema"`
 	K8sSchema        K8sSchemaOptions   `yaml:"k8s_schema"`
 	RequiredFields    []string          `yaml:"required_fields"`
 	MaxLineLength     int               `yaml:"max_line_length"`
@@ -73,6 +80,7 @@ func DefaultConfig() *Config {
 			CheckIntegrity:    true,
 			CheckCommonErrors: true,
 			Style:            StyleOptions{},
+			JsonSchema:       JsonSchemaOptions{Enabled: false},
 			K8sSchema:        K8sSchemaOptions{Enabled: false, Version: "master", IgnoreMissing: true},
 			RequiredFields:    []string{"apiVersion", "kind", "metadata.name"},
 			MaxLineLength:     200,

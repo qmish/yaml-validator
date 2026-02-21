@@ -1,0 +1,19 @@
+# Пример конфигурации с проверкой по произвольной JSON Schema
+# Использование: yaml-validator validate file.yaml -c configs/json-schema.yaml
+# Путь к схеме — относительно текущей директории или абсолютный.
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: false
+  check_common_errors: true
+  style:
+    require_document_start: false
+    forbid_trailing_spaces: false
+    require_newline_at_eof: false
+  json_schema:
+    enabled: true
+    schema_path: testdata/schemas/config-schema.json
+  k8s_schema:
+    enabled: false
+  required_fields: []
+  max_line_length: 200

@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.25.0] - 2026-02-21
+
+### Добавлено
+
+- **Поддержка JSON Schema** (6.3) — опциональная валидация по произвольной JSON Schema (не только K8s): `rules.json_schema.enabled: true`, `rules.json_schema.schema_path: путь/к/схеме.json`. Конфиг `configs/json-schema.yaml`, пример схемы `testdata/schemas/config-schema.json`. Используется [santhosh-tekuri/jsonschema](https://github.com/santhosh-tekuri/jsonschema).
+
 ## [1.24.0] - 2026-02-21
 
 ### Добавлено

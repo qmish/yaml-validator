@@ -69,6 +69,10 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckQuotedValues(node)...)
 	}
 
+	if rules.JsonSchema.Enabled && rules.JsonSchema.SchemaPath != "" {
+		allErrors = append(allErrors, CheckJsonSchema(filename, rules.JsonSchema)...)
+	}
+
 	if rules.K8sSchema.Enabled {
 		allErrors = append(allErrors, CheckK8sSchema(filename, rules.K8sSchema)...)
 	}

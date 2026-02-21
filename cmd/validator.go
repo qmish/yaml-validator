@@ -135,6 +135,9 @@ var configInitCmd = &cobra.Command{
     require_quoted_keys: false
     require_quoted_values: false
     indent_spaces: 0
+  json_schema:
+    enabled: false
+    schema_path: ""
   k8s_schema:
     enabled: false
     version: master
