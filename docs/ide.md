@@ -1,6 +1,6 @@
 # VS Code и IDE: использование как линтера
 
-Использование yaml-validator как линтера в редакторах. Формат `-o compact` выводит `file:line[:col]: message` (ESLint-style), подходящий для парсинга IDE.
+Использование yaml-validator как линтера в редакторах. Формат `-o compact` выводит `file:line[:col]: message` (ESLint-style), подходящий для парсинга IDE. Для live-валидации при редактировании можно использовать `yaml-validator validate file.yaml -o compact --watch` (повторная проверка при сохранении).
 
 ## VS Code
 

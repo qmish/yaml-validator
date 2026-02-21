@@ -44,6 +44,18 @@ func TestVersionCommand(t *testing.T) {
 	}
 }
 
+func TestValidateCommand_WatchFlag(t *testing.T) {
+	rootCmd.SetArgs([]string{"validate", "--help"})
+	var buf bytes.Buffer
+	rootCmd.SetErr(&buf)
+	rootCmd.SetOut(&buf)
+	_ = rootCmd.Execute()
+	out := buf.String()
+	if !strings.Contains(out, "--watch") && !strings.Contains(out, "watch") {
+		t.Errorf("Expected --watch in help, got: %s", out)
+	}
+}
+
 func TestValidateCommand_Integration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode")

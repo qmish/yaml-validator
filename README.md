@@ -58,6 +58,9 @@ yaml-validator validate config.yaml -o severity
 # Автофикс (trailing spaces, newline at EOF, consecutive empty lines)
 yaml-validator validate config.yaml --fix
 
+# Watch-режим — повторная валидация при изменении файлов (Ctrl+C для выхода)
+yaml-validator validate config.yaml --watch
+
 # Использование конфигурационного файла
 yaml-validator validate config.yaml -c configs/default.yaml
 
