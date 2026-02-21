@@ -11,6 +11,28 @@ import (
 	"yaml-validator/internal/config"
 )
 
+func TestCheckStyle_ForbidBOM(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	// UTF-8 BOM: EF BB BF
+	require.NoError(t, os.WriteFile(f, append([]byte{0xEF, 0xBB, 0xBF}, "key: value\n"...), 0644))
+
+	opts := config.StyleOptions{ForbidBOM: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "ForbidBOM", errors[0].Type)
+}
+
+func TestCheckStyle_ForbidBOM_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key: value\n"), 0644))
+
+	opts := config.StyleOptions{ForbidBOM: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_RequireDocumentStart(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

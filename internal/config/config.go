@@ -37,6 +37,7 @@ type StyleOptions struct {
 	IndentSpaces         int  `yaml:"indent_spaces"`          // шаг отступов (2 или 4 пробелов; 0 = отключено)
 	ForbidTabs           bool `yaml:"forbid_tabs"`            // запрет табуляции (отдельное правило стиля; при true — ошибка TabInsteadOfSpaces)
 	ForbidUnicode        bool `yaml:"forbid_unicode"`         // запрет не-ASCII в ключах и строках (строгие ASCII-конфиги)
+	ForbidBOM            bool `yaml:"forbid_bom"`              // запрет BOM (Byte Order Mark) в начале файла
 }
 
 // ValidationRules определяет правила валидации

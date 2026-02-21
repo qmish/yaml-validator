@@ -13,7 +13,7 @@ import (
 // CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys, indent step)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
-		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && opts.MinEmptyLinesBetweenBlocks <= 0 && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs && !opts.ForbidUnicode {
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && opts.MinEmptyLinesBetweenBlocks <= 0 && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs && !opts.ForbidUnicode && !opts.ForbidBOM {
 		return nil
 	}
 
@@ -26,6 +26,15 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	lines := strings.Split(content, "\n")
 
 	var errors []pkg.Error
+
+	if opts.ForbidBOM && len(data) >= 3 && data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF {
+		errors = append(errors, pkg.Error{
+			Type:       "ForbidBOM",
+			Message:    "BOM (Byte Order Mark) not allowed at start of file",
+			Suggestion: "remove BOM from file",
+			Line:       1,
+		})
+	}
 
 	if opts.RequireDocumentStart && len(lines) > 0 {
 		firstLine := strings.TrimSpace(lines[0])
