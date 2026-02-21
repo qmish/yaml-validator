@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.23.0] - 2026-02-21
+
+### Добавлено
+
+- **Benchmark / performance** (4.3) — тесты производительности: `internal/validator/benchmark_test.go` (BenchmarkValidate_Small/Medium/Large), `internal/parser/benchmark_test.go` (BenchmarkParseFile_Small/Large); цель `make benchmark`.
+
 ## [1.22.0] - 2026-02-21
 
 ### Добавлено

@@ -1,7 +1,7 @@
 # Makefile для yaml-validator
 # Использование: make build | test | validate | docker
 
-.PHONY: build test validate docker clean help
+.PHONY: build test validate docker clean help benchmark
 
 BINARY := yaml-validator
 GOFLAGS := -v
@@ -10,7 +10,8 @@ help:
 	@echo "Доступные цели:"
 	@echo "  make build    - собрать бинарник"
 	@echo "  make test     - запустить тесты"
-	@echo "  make validate - проверить тестовые YAML"
+	@echo "  make validate  - проверить тестовые YAML"
+	@echo "  make benchmark - запустить бенчмарки производительности"
 	@echo "  make docker   - собрать Docker образ"
 	@echo "  make clean    - удалить бинарники"
 
@@ -28,6 +29,10 @@ test:
 test-coverage:
 	go test ./... -coverprofile=coverage.out -short
 	go tool cover -html=coverage.out -o coverage.html
+
+benchmark:
+	go test ./internal/validator -bench=. -benchmem -run=^$$ -count=1
+	go test ./internal/parser -bench=. -benchmem -run=^$$ -count=1
 
 validate: build
 	./bin/$(BINARY) validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
