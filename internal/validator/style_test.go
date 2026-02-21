@@ -64,6 +64,27 @@ func TestCheckStyle_ForbidTrailingDots_Ok(t *testing.T) {
 	assert.Empty(t, errors)
 }
 
+func TestCheckStyle_ForbidTabs(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key:\n\tvalue: 1\n"), 0644))
+
+	opts := config.StyleOptions{ForbidTabs: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "TabInsteadOfSpaces", errors[0].Type)
+}
+
+func TestCheckStyle_ForbidTabs_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key:\n  value: 1\n"), 0644))
+
+	opts := config.StyleOptions{ForbidTabs: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_RequireNewlineAtEof(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

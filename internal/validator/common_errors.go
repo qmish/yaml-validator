@@ -9,8 +9,9 @@ import (
 	"yaml-validator/pkg"
 )
 
-// CheckCommonErrors ищет распространённые ошибки: табуляции, длинные строки, незаэкранированные значения, чувствительные данные
-func CheckCommonErrors(filename string, maxLineLength int, sensitivePatterns []string) []pkg.Error {
+// CheckCommonErrors ищет распространённые ошибки: табуляции (если skipTabCheck false), длинные строки, чувствительные данные.
+// При skipTabCheck true проверка табов выполняется в CheckStyle (style.forbid_tabs).
+func CheckCommonErrors(filename string, maxLineLength int, sensitivePatterns []string, skipTabCheck bool) []pkg.Error {
 	var errors []pkg.Error
 
 	data, err := os.ReadFile(filename)
@@ -23,12 +24,12 @@ func CheckCommonErrors(filename string, maxLineLength int, sensitivePatterns []s
 	for i, line := range lines {
 		lineNum := i + 1
 
-		if strings.Contains(line, "\t") {
+		if !skipTabCheck && strings.Contains(line, "\t") {
 			errors = append(errors, pkg.Error{
 				Type:       "TabInsteadOfSpaces",
 				Message:    "Line contains tabs; use spaces for indentation",
 				Suggestion: "replace tabs with spaces",
-				Line:    lineNum,
+				Line:       lineNum,
 			})
 		}
 

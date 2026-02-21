@@ -6,6 +6,7 @@ rules:
   check_common_errors: true
   style:
     require_document_start: true
+    forbid_tabs: true
     forbid_trailing_spaces: true
     require_newline_at_eof: true
     forbid_consecutive_empty_lines: true

@@ -12,7 +12,7 @@ import (
 // CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys, indent step)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
-		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 {
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs {
 		return nil
 	}
 
@@ -59,6 +59,19 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 					Type:       "TrailingDots",
 					Message:    "forbid trailing dots at end of line",
 					Suggestion: "remove trailing dot",
+					Line:       i + 1,
+				})
+			}
+		}
+	}
+
+	if opts.ForbidTabs {
+		for i, line := range lines {
+			if strings.Contains(line, "\t") {
+				errors = append(errors, pkg.Error{
+					Type:       "TabInsteadOfSpaces",
+					Message:    "line contains tabs; use spaces for indentation",
+					Suggestion: "replace tabs with spaces",
 					Line:       i + 1,
 				})
 			}
@@ -180,7 +193,7 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				continue
 			}
 			if strings.Contains(line, "\t") {
-				continue // TabInsteadOfSpaces в check_common_errors
+				continue // TabInsteadOfSpaces в style.forbid_tabs или check_common_errors
 			}
 			indent := len(line) - len(strings.TrimLeft(line, " "))
 			if indent > 0 && indent%opts.IndentSpaces != 0 {

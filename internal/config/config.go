@@ -34,6 +34,7 @@ type StyleOptions struct {
 	RequireQuotedKeys    bool `yaml:"require_quoted_keys"`    // ключи маппинга должны быть в кавычках
 	RequireQuotedValues  bool `yaml:"require_quoted_values"`  // строковые значения должны быть в кавычках
 	IndentSpaces         int  `yaml:"indent_spaces"`          // шаг отступов (2 или 4 пробелов; 0 = отключено)
+	ForbidTabs           bool `yaml:"forbid_tabs"`            // запрет табуляции (отдельное правило стиля; при true — ошибка TabInsteadOfSpaces)
 }
 
 // ValidationRules определяет правила валидации

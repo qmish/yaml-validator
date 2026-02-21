@@ -56,12 +56,12 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		if len(patterns) == 0 {
 			patterns = config.DefaultConfig().Rules.SensitivePatterns
 		}
-		allErrors = append(allErrors, CheckCommonErrors(filename, maxLen, patterns)...)
+		allErrors = append(allErrors, CheckCommonErrors(filename, maxLen, patterns, rules.Style.ForbidTabs)...)
 	}
 
 	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.ForbidTrailingDots ||
 		rules.Style.RequireNewlineAtEof || rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireEmptyLineBetweenBlocks || rules.Style.RequireDocumentEnd ||
-		rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys || rules.Style.IndentSpaces > 0 {
+		rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys || rules.Style.IndentSpaces > 0 || rules.Style.ForbidTabs {
 		allErrors = append(allErrors, CheckStyle(filename, rules.Style)...)
 	}
 
