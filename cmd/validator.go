@@ -21,6 +21,7 @@ var (
 	outputFmt  string
 	verbose    bool
 	logJSON    bool
+	quiet      bool
 )
 
 var rootCmd = &cobra.Command{
@@ -56,6 +57,7 @@ var validateCmd = &cobra.Command{
 		logger.Debug("Loaded config: check_syntax=%v, check_duplicates=%v", cfg.Rules.CheckSyntax, cfg.Rules.CheckDuplicates)
 		exitCode := ExitOK
 		hasErrors := false
+		totalErrors := 0
 		var sarifResults []reporter.FileResult
 		var gitlabResults []reporter.FileResult
 		var checkstyleResults []reporter.FileResult
@@ -86,22 +88,26 @@ var validateCmd = &cobra.Command{
 					checkstyleResults = append(checkstyleResults, reporter.FileResult{File: absPath, Errors: errors})
 				}
 			}
-			if outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
-				switch outputFmt {
-				case "json":
-					report, _ := reporter.GenerateJSONReport(file, errors)
-					fmt.Println(string(report))
-				case "junit":
-					report, _ := reporter.GenerateJUnitReport(file, errors)
-					fmt.Println(string(report))
-				case "compact":
-					reporter.PrintCompact(file, errors)
-				case "github-annotations":
-					reporter.PrintGitHubAnnotations(file, errors)
-				case "severity":
-					reporter.PrintSeverity(file, errors)
-				default:
-					reporter.PrintHumanReadable(file, errors)
+			totalErrors += len(errors)
+
+			if !quiet {
+				if outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
+					switch outputFmt {
+					case "json":
+						report, _ := reporter.GenerateJSONReport(file, errors)
+						fmt.Println(string(report))
+					case "junit":
+						report, _ := reporter.GenerateJUnitReport(file, errors)
+						fmt.Println(string(report))
+					case "compact":
+						reporter.PrintCompact(file, errors)
+					case "github-annotations":
+						reporter.PrintGitHubAnnotations(file, errors)
+					case "severity":
+						reporter.PrintSeverity(file, errors)
+					default:
+						reporter.PrintHumanReadable(file, errors)
+					}
 				}
 			}
 
@@ -126,6 +132,22 @@ var validateCmd = &cobra.Command{
 		if outputFmt == "checkstyle" && len(checkstyleResults) > 0 {
 			report, _ := reporter.GenerateCheckstyleReport(checkstyleResults)
 			fmt.Println(string(report))
+		}
+
+		if quiet {
+			// В режиме quiet — только итог (OK / N errors); для машинных форматов итог не выводим
+			machineFormat := outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "json" || outputFmt == "junit"
+			if !machineFormat {
+				if hasErrors {
+					if totalErrors == 1 {
+						fmt.Println("1 error")
+					} else {
+						fmt.Printf("%d errors\n", totalErrors)
+					}
+				} else {
+					fmt.Println("OK")
+				}
+			}
 		}
 
 		os.Exit(exitCode) // 0 OK, 1 errors, 2 warnings (reserved)
@@ -224,6 +246,7 @@ func init() {
 	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, checkstyle, compact, gitlab, github-annotations, severity")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
+	validateCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output: only OK or N errors")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")
 
 	configCmd := &cobra.Command{
