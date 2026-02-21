@@ -204,6 +204,27 @@ func TestCheckStyle_RequireCommentsIndented_Ok(t *testing.T) {
 	assert.Empty(t, errors)
 }
 
+func TestCheckStyle_ForbidUnicode(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key: значение\n"), 0644))
+
+	opts := config.StyleOptions{ForbidUnicode: true}
+	errors := CheckStyle(f, opts)
+	require.NotEmpty(t, errors)
+	assert.Equal(t, "ForbidUnicode", errors[0].Type)
+}
+
+func TestCheckStyle_ForbidUnicode_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key: value\nname: test\n"), 0644))
+
+	opts := config.StyleOptions{ForbidUnicode: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_RequireQuotedKeys(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

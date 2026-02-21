@@ -61,7 +61,7 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 
 	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.ForbidTrailingDots ||
 		rules.Style.RequireNewlineAtEof || rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireEmptyLineBetweenBlocks || rules.Style.MinEmptyLinesBetweenBlocks >= 1 || rules.Style.RequireDocumentEnd ||
-		rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys || rules.Style.IndentSpaces > 0 || rules.Style.ForbidTabs {
+		rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys || rules.Style.IndentSpaces > 0 || rules.Style.ForbidTabs || rules.Style.ForbidUnicode {
 		allErrors = append(allErrors, CheckStyle(filename, rules.Style)...)
 	}
 

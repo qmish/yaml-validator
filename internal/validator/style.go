@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"unicode"
 
 	"yaml-validator/internal/config"
 	"yaml-validator/pkg"
@@ -12,7 +13,7 @@ import (
 // CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys, indent step)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
-		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && opts.MinEmptyLinesBetweenBlocks <= 0 && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs {
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && opts.MinEmptyLinesBetweenBlocks <= 0 && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs && !opts.ForbidUnicode {
 		return nil
 	}
 
@@ -210,6 +211,45 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 		}
 	}
 
+	if opts.ForbidUnicode {
+		for i, line := range lines {
+			trimmed := strings.TrimSpace(line)
+			if trimmed == "" || strings.HasPrefix(trimmed, "#") || trimmed == "---" || trimmed == "..." {
+				continue
+			}
+			idx := strings.Index(line, ":")
+			if idx < 0 {
+				if hasNonASCII(trimmed) {
+					errors = append(errors, pkg.Error{
+						Type:       "ForbidUnicode",
+						Message:    "non-ASCII characters not allowed",
+						Suggestion: "use ASCII-only characters",
+						Line:       i + 1,
+					})
+				}
+				continue
+			}
+			keyPart := strings.TrimSpace(line[:idx])
+			valPart := strings.TrimSpace(line[idx+1:])
+			if keyPart != "" && hasNonASCII(keyPart) {
+				errors = append(errors, pkg.Error{
+					Type:       "ForbidUnicode",
+					Message:    "non-ASCII characters in key not allowed",
+					Suggestion: "use ASCII-only characters for keys",
+					Line:       i + 1,
+				})
+			}
+			if valPart != "" && valPart != "|" && valPart != ">" && hasNonASCII(valPart) {
+				errors = append(errors, pkg.Error{
+					Type:       "ForbidUnicode",
+					Message:    "non-ASCII characters in value not allowed",
+					Suggestion: "use ASCII-only characters for values",
+					Line:       i + 1,
+				})
+			}
+		}
+	}
+
 	if opts.RequireQuotedKeys {
 		for i, line := range lines {
 			trimmed := strings.TrimSpace(line)
@@ -239,4 +279,13 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	}
 
 	return errors
+}
+
+func hasNonASCII(s string) bool {
+	for _, r := range s {
+		if r > unicode.MaxASCII {
+			return true
+		}
+	}
+	return false
 }
