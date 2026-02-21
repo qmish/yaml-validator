@@ -78,6 +78,15 @@ yaml-validator validate config.yaml --log-json
 
 По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`.
 
+- **Конфиг по имени файла** — в yaml-validator.yaml добавьте `file_profiles`:
+```yaml
+file_profiles:
+  - pattern: "**/k8s/**"
+    config: "configs/k8s-strict.yaml"
+  - pattern: "*docker-compose*.yaml"
+    config: "configs/docker-compose.yaml"
+```
+
 - **K8s-манифесты** — конфиг по умолчанию (проверка apiVersion, kind, metadata.name). Для порядка ключей K8s (metadata перед spec): `-c configs/k8s-key-order.yaml`. Для полной схемы: `-c configs/k8s-strict.yaml`.
 - **docker-compose и другой YAML** — `-c configs/docker-compose.yaml` (без обязательных K8s-полей).
 - **Произвольная JSON Schema** — `-c configs/json-schema.yaml` с путём к схеме в `rules.json_schema.schema_path`.

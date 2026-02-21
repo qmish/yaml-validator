@@ -2,6 +2,8 @@ package config
 
 import (
 	"os"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -58,9 +60,58 @@ type ValidationRules struct {
 	SensitivePatterns []string          `yaml:"sensitive_patterns"`
 }
 
+// FileProfile — правило автовыбора конфига по маске пути к файлу
+type FileProfile struct {
+	Pattern string `yaml:"pattern"` // маска, напр. "**/k8s/**", "*docker-compose*.yaml"
+	Config  string `yaml:"config"`  // путь к конфигу (configs/k8s-strict.yaml)
+}
+
 // Config основная структура конфигурации
 type Config struct {
-	Rules ValidationRules `yaml:"rules"`
+	Rules         ValidationRules `yaml:"rules"`
+	FileProfiles  []FileProfile   `yaml:"file_profiles"` // автовыбор профиля по имени файла (4.5)
+}
+
+// MatchFileProfile проверяет, подходит ли путь к файлу под маску.
+// Поддерживает: "**/X/**" — путь содержит /X/, "*name*" — filepath.Match по имени.
+func MatchFileProfile(pattern, filePath string) bool {
+	normalized := filepath.ToSlash(filepath.Clean(filePath))
+	base := filepath.Base(filePath)
+
+	if strings.HasPrefix(pattern, "**/") && strings.HasSuffix(pattern, "/**") {
+		mid := pattern[3 : len(pattern)-3]
+		return strings.Contains(normalized, "/"+mid+"/") || strings.HasPrefix(normalized, mid+"/")
+	}
+	if strings.HasPrefix(pattern, "**/") {
+		suffix := pattern[3:]
+		if ok, _ := filepath.Match(suffix, base); ok {
+			return true
+		}
+		if strings.Contains(normalized, "/"+suffix) || strings.HasPrefix(normalized, suffix) {
+			return true
+		}
+	}
+	ok, _ := filepath.Match(pattern, base)
+	return ok
+}
+
+// ConfigForFile возвращает конфиг для файла с учётом file_profiles.
+// Первое совпадение pattern wins.
+func ConfigForFile(base *Config, filePath string) *Config {
+	if base == nil || len(base.FileProfiles) == 0 {
+		return base
+	}
+	for _, p := range base.FileProfiles {
+		if p.Pattern == "" || p.Config == "" {
+			continue
+		}
+		if MatchFileProfile(p.Pattern, filePath) {
+			if cfg, err := LoadConfig(p.Config); err == nil {
+				return cfg
+			}
+		}
+	}
+	return base
 }
 
 // LoadConfig загружает конфигурацию из файла

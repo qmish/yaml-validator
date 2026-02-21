@@ -57,8 +57,8 @@ var validateCmd = &cobra.Command{
 			logger.SetJSON(true)
 		}
 
-		cfg := loadConfig()
-		logger.Debug("Loaded config: check_syntax=%v, check_duplicates=%v", cfg.Rules.CheckSyntax, cfg.Rules.CheckDuplicates)
+		baseCfg := loadConfig()
+		logger.Debug("Loaded config: check_syntax=%v, check_duplicates=%v", baseCfg.Rules.CheckSyntax, baseCfg.Rules.CheckDuplicates)
 		exitCode := ExitOK
 		hasErrors := false
 		totalErrors := 0
@@ -73,6 +73,7 @@ var validateCmd = &cobra.Command{
 				absPath = file
 			}
 
+			cfg := config.ConfigForFile(baseCfg, absPath)
 			if fix {
 				// При --fix всегда применяем fixable-правила (trailing spaces, newline at EOF, consecutive empty lines)
 				fixCfg := *cfg

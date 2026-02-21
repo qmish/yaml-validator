@@ -1,0 +1,17 @@
+# Пример конфига с автовыбором профиля по имени файла (4.5)
+# Добавьте file_profiles в yaml-validator.yaml в корне проекта.
+# Первое совпадение pattern определяет используемый конфиг.
+
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: true
+  check_common_errors: true
+
+file_profiles:
+  - pattern: "**/k8s/**"
+    config: "configs/k8s-strict.yaml"
+  - pattern: "*docker-compose*.yaml"
+    config: "configs/docker-compose.yaml"
+  - pattern: "*docker-compose*.yml"
+    config: "configs/docker-compose.yaml"
