@@ -22,6 +22,7 @@ const (
 	FormatJSON          Format = "json"
 	FormatJUnit         Format = "junit"
 	FormatSARIF         Format = "sarif"
+	FormatCheckstyle    Format = "checkstyle" // XML для Jenkins, SonarQube
 	FormatHumanReadable Format = "human"
 	FormatCompact       Format = "compact" // file:line: message (ESLint-style, для редакторов)
 )

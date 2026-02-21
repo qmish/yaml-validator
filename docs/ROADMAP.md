@@ -27,7 +27,7 @@
 | 2.1 | **GitLab Code Quality (JSON)** | Формат `gl-code-quality-report.json` для GitLab CI (`-o gitlab`). | ✅ | v1.13.0 |
 | 2.2 | **GitHub Annotations** | Строки вида `::error file=...,line=...::` для GitHub Actions (`-o github-annotations`). | ✅ | v1.14.0 |
 | 2.3 | **Текстовый формат с severity** | `[ERROR] file:line: message` / `[WARN]` для скриптов и CI. | ✅ | v1.17.0 |
-| 2.4 | **Checkstyle XML** | Формат вывода, совместимый с Checkstyle (Jenkins, SonarQube). | ⬜ | — |
+| 2.4 | **Checkstyle XML** | Формат вывода, совместимый с Checkstyle (Jenkins, SonarQube). | ✅ | v1.31.0 |
 | 2.5 | **Разные exit code** | Отдельные коды выхода: 0 — ок, 1 — есть ошибки, 2 — только предупреждения. | ⬜ | — |
 | 2.6 | **Режим --quiet** | Минимальный вывод: только итог (OK / N errors). | ⬜ | — |
 | 2.7 | **Список правил (машиночитаемый)** | Подкоманда `rules list` или флаг, выводящий правила в JSON/YAML для скриптов и доки. | ⬜ | — |
@@ -123,6 +123,7 @@
 | v1.28.0 | колонка в ошибках LineTooLong (1.7) | 2026-02-21 |
 | v1.29.0 | forbid_unicode (1.8) | 2026-02-21 |
 | v1.30.0 | forbid_bom (1.9) | 2026-02-21 |
+| v1.31.0 | Checkstyle XML (2.4) | 2026-02-21 |
 | *далее* | — | — |
 
 ---

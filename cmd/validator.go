@@ -49,6 +49,7 @@ var validateCmd = &cobra.Command{
 		exitCode := 0
 		var sarifResults []reporter.FileResult
 		var gitlabResults []reporter.FileResult
+		var checkstyleResults []reporter.FileResult
 
 		for _, file := range args {
 			logger.Debug("Validating file: %s", file)
@@ -66,14 +67,17 @@ var validateCmd = &cobra.Command{
 			}
 			logger.Debug("File %s: %d error(s)", file, len(errors))
 
-			if outputFmt == "sarif" || outputFmt == "gitlab" {
-				if outputFmt == "sarif" {
+			if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" {
+				switch outputFmt {
+				case "sarif":
 					sarifResults = append(sarifResults, reporter.FileResult{File: absPath, Errors: errors})
-				} else {
+				case "gitlab":
 					gitlabResults = append(gitlabResults, reporter.FileResult{File: file, Errors: errors})
+				case "checkstyle":
+					checkstyleResults = append(checkstyleResults, reporter.FileResult{File: absPath, Errors: errors})
 				}
 			}
-			if outputFmt != "sarif" && outputFmt != "gitlab" {
+			if outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
 				switch outputFmt {
 				case "json":
 					report, _ := reporter.GenerateJSONReport(file, errors)
@@ -103,6 +107,10 @@ var validateCmd = &cobra.Command{
 		}
 		if outputFmt == "gitlab" && len(gitlabResults) > 0 {
 			report, _ := reporter.GenerateGitLabCodeQualityReport(gitlabResults)
+			fmt.Println(string(report))
+		}
+		if outputFmt == "checkstyle" && len(checkstyleResults) > 0 {
+			report, _ := reporter.GenerateCheckstyleReport(checkstyleResults)
 			fmt.Println(string(report))
 		}
 
@@ -199,7 +207,7 @@ func loadConfig() *config.Config {
 }
 
 func init() {
-	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, compact, gitlab, github-annotations, severity")
+	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, checkstyle, compact, gitlab, github-annotations, severity")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")
