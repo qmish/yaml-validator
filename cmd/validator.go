@@ -10,6 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"yaml-validator/internal/config"
+	"yaml-validator/internal/fixer"
 	"yaml-validator/internal/logger"
 	"yaml-validator/internal/reporter"
 	"yaml-validator/internal/validator"
@@ -24,6 +25,7 @@ var (
 	verbose    bool
 	logJSON    bool
 	quiet      bool
+	fix        bool
 )
 
 var rootCmd = &cobra.Command{
@@ -69,6 +71,24 @@ var validateCmd = &cobra.Command{
 			absPath, err := filepath.Abs(file)
 			if err != nil {
 				absPath = file
+			}
+
+			if fix {
+				// При --fix всегда применяем fixable-правила (trailing spaces, newline at EOF, consecutive empty lines)
+				fixCfg := *cfg
+				fixCfg.Rules.Style.ForbidTrailingSpaces = true
+				fixCfg.Rules.Style.RequireNewlineAtEof = true
+				fixCfg.Rules.Style.ForbidConsecutiveEmptyLines = true
+				fixRes, fixErr := fixer.FixFile(absPath, &fixCfg)
+				if fixErr != nil {
+					logger.Error("Fix failed for %s: %v", file, fixErr)
+					fmt.Fprintf(os.Stderr, "Fix failed for %s: %v\n", file, fixErr)
+					hasErrors = true
+					continue
+				}
+				if fixRes.Modified && !quiet {
+					fmt.Printf("Fixed %s: %v\n", file, fixRes.Applied)
+				}
 			}
 
 			errors, err := validator.Validate(absPath, cfg)
@@ -312,6 +332,7 @@ func init() {
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output: only OK or N errors")
+	validateCmd.Flags().BoolVar(&fix, "fix", false, "Auto-fix: trailing spaces, newline at EOF, consecutive empty lines")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")
 
 	configCmd := &cobra.Command{

@@ -55,6 +55,9 @@ yaml-validator validate config.yaml -o github-annotations
 # Текстовый формат с severity [ERROR] file:line: message (для скриптов, CI)
 yaml-validator validate config.yaml -o severity
 
+# Автофикс (trailing spaces, newline at EOF, consecutive empty lines)
+yaml-validator validate config.yaml --fix
+
 # Использование конфигурационного файла
 yaml-validator validate config.yaml -c configs/default.yaml
 
