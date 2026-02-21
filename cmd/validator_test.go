@@ -9,6 +9,12 @@ import (
 	"testing"
 )
 
+func TestExitCodes(t *testing.T) {
+	if ExitOK != 0 || ExitErrors != 1 || ExitWarnings != 2 {
+		t.Errorf("Expected ExitOK=0, ExitErrors=1, ExitWarnings=2, got %d, %d, %d", ExitOK, ExitErrors, ExitWarnings)
+	}
+}
+
 func TestVersionCommand(t *testing.T) {
 	rootCmd.SetArgs([]string{"version"})
 	var buf bytes.Buffer

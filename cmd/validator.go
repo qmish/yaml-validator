@@ -32,9 +32,17 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+// Коды выхода: 0 — OK, 1 — есть ошибки, 2 — только предупреждения (для будущего 5.7)
+const (
+	ExitOK       = 0
+	ExitErrors   = 1
+	ExitWarnings = 2
+)
+
 var validateCmd = &cobra.Command{
 	Use:   "validate [file]",
 	Short: "Validate YAML file",
+	Long:  "Validate YAML files. Exit codes: 0 — OK, 1 — validation errors, 2 — only warnings (reserved for future)",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if verbose {
@@ -46,7 +54,8 @@ var validateCmd = &cobra.Command{
 
 		cfg := loadConfig()
 		logger.Debug("Loaded config: check_syntax=%v, check_duplicates=%v", cfg.Rules.CheckSyntax, cfg.Rules.CheckDuplicates)
-		exitCode := 0
+		exitCode := ExitOK
+		hasErrors := false
 		var sarifResults []reporter.FileResult
 		var gitlabResults []reporter.FileResult
 		var checkstyleResults []reporter.FileResult
@@ -62,7 +71,7 @@ var validateCmd = &cobra.Command{
 			if err != nil {
 				logger.Error("Validation failed for %s: %v", file, err)
 				fmt.Fprintf(os.Stderr, "Error validating %s: %v\n", file, err)
-				exitCode = 1
+				hasErrors = true
 				continue
 			}
 			logger.Debug("File %s: %d error(s)", file, len(errors))
@@ -97,9 +106,14 @@ var validateCmd = &cobra.Command{
 			}
 
 			if len(errors) > 0 {
-				exitCode = 1
+				hasErrors = true
 			}
 		}
+
+		if hasErrors {
+			exitCode = ExitErrors
+		}
+		// ExitWarnings (2) — для будущего, когда будут предупреждения (5.7)
 
 		if outputFmt == "sarif" && len(sarifResults) > 0 {
 			report, _ := reporter.GenerateSARIFReport(version, sarifResults)
@@ -114,7 +128,7 @@ var validateCmd = &cobra.Command{
 			fmt.Println(string(report))
 		}
 
-		os.Exit(exitCode)
+		os.Exit(exitCode) // 0 OK, 1 errors, 2 warnings (reserved)
 	},
 }
 
