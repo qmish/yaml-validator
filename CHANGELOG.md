@@ -2,6 +2,14 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.13.0] - 2026-02-20
+
+### Добавлено
+
+- **Формат GitLab Code Quality** — вывод `-o gitlab` для GitLab CI (`gl-code-quality-report.json`), артефакт `reports.codequality`.
+- **Makefile** — цель `validate` проверяет также `docker-compose.yaml` с профилем `configs/docker-compose.yaml`.
+- **Пример workflow** — `docs/code-scanning-example.yml` для GitHub Code Scanning (SARIF + Advanced Security).
+
 ## [1.12.0] - 2026-02-20
 
 ### Добавлено

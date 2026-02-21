@@ -1,0 +1,37 @@
+# Пример workflow для GitHub Code Scanning (Advanced Security)
+# Скопируйте в .github/workflows/ или используйте как референс.
+# Требуется: GitHub Advanced Security (для публичных репозиториев бесплатно)
+
+name: Code Scanning (YAML)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  yaml-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - name: Build yaml-validator
+        run: go build -o yaml-validator .
+
+      - name: Run yaml-validator
+        run: |
+          ./yaml-validator validate "**/*.yml" "**/*.yaml" -o sarif > results.sarif
+          # Или для конкретных путей:
+          # ./yaml-validator validate . -o sarif > results.sarif
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+        continue-on-error: true  # если Advanced Security недоступен

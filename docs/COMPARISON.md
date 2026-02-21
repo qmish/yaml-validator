@@ -151,6 +151,6 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 
 1. **Правила стиля** — реализованы: document-start/end, trailing spaces, newline EOF, пустые строки подряд, отступ комментариев, порядок ключей, кавычки для ключей (`require_quoted_keys`). Длина строки через `max_line_length`.
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
-3. **Доп. форматы** — реализовано: `-o compact` (файл:строка[:колонка]: сообщение), колонка выводится, когда доступна (например, DuplicateKey); SARIF использует startColumn.
+3. **Доп. форматы** — реализовано: `-o compact`, SARIF, **GitLab Code Quality** (`-o gitlab` для `gl-code-quality-report.json`). Колонка в compact/SARIF, когда доступна.
 
-Документ обновлён по состоянию v1.12.0.
+Документ обновлён по состоянию v1.13.0.

@@ -31,6 +31,7 @@ test-coverage:
 
 validate: build
 	./bin/$(BINARY) validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
+	./bin/$(BINARY) validate testdata/examples/docker-compose.yaml -c configs/docker-compose.yaml
 
 docker:
 	docker build -t yaml-validator .

@@ -42,6 +42,9 @@ yaml-validator validate config.yaml -o junit
 # Вывод в формате SARIF (для GitHub Code Scanning)
 yaml-validator validate config.yaml -o sarif > results.sarif
 
+# Вывод в формате GitLab Code Quality (gl-code-quality-report.json)
+yaml-validator validate config.yaml -o gitlab > gl-code-quality-report.json
+
 # Компактный вывод file:line[:col]: message (для редакторов, парсеров; колонка выводится, когда известна)
 yaml-validator validate config.yaml -o compact
 
@@ -148,6 +151,8 @@ go test ./... -v
 
 ### GitHub Code Scanning (SARIF)
 
+См. [docs/code-scanning-example.yml](docs/code-scanning-example.yml) — полный пример workflow.
+
 ```yaml
 - name: Validate YAML and upload SARIF
   run: |
@@ -155,6 +160,17 @@ go test ./... -v
 - uses: github/codeql-action/upload-sarif@v3
   with:
     sarif_file: results.sarif
+```
+
+### GitLab CI (Code Quality)
+
+```yaml
+validate-yaml:
+  script:
+    - yaml-validator validate "**/*.yml" "**/*.yaml" -o gitlab > gl-code-quality-report.json
+  artifacts:
+    reports:
+      codequality: gl-code-quality-report.json
 ```
 
 ### Git pre-commit hook

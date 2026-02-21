@@ -48,6 +48,7 @@ var validateCmd = &cobra.Command{
 		logger.Debug("Loaded config: check_syntax=%v, check_duplicates=%v", cfg.Rules.CheckSyntax, cfg.Rules.CheckDuplicates)
 		exitCode := 0
 		var sarifResults []reporter.FileResult
+		var gitlabResults []reporter.FileResult
 
 		for _, file := range args {
 			logger.Debug("Validating file: %s", file)
@@ -65,9 +66,14 @@ var validateCmd = &cobra.Command{
 			}
 			logger.Debug("File %s: %d error(s)", file, len(errors))
 
-			if outputFmt == "sarif" {
-				sarifResults = append(sarifResults, reporter.FileResult{File: absPath, Errors: errors})
-			} else {
+			if outputFmt == "sarif" || outputFmt == "gitlab" {
+				if outputFmt == "sarif" {
+					sarifResults = append(sarifResults, reporter.FileResult{File: absPath, Errors: errors})
+				} else {
+					gitlabResults = append(gitlabResults, reporter.FileResult{File: file, Errors: errors})
+				}
+			}
+			if outputFmt != "sarif" && outputFmt != "gitlab" {
 				switch outputFmt {
 				case "json":
 					report, _ := reporter.GenerateJSONReport(file, errors)
@@ -89,6 +95,10 @@ var validateCmd = &cobra.Command{
 
 		if outputFmt == "sarif" && len(sarifResults) > 0 {
 			report, _ := reporter.GenerateSARIFReport(version, sarifResults)
+			fmt.Println(string(report))
+		}
+		if outputFmt == "gitlab" && len(gitlabResults) > 0 {
+			report, _ := reporter.GenerateGitLabCodeQualityReport(gitlabResults)
 			fmt.Println(string(report))
 		}
 
@@ -172,7 +182,7 @@ func loadConfig() *config.Config {
 }
 
 func init() {
-	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, compact")
+	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, compact, gitlab")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")
