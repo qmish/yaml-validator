@@ -36,7 +36,7 @@
 |-----------------------|--------------------|-----------------------------------|
 | Дубликаты ключей      | ✅ key-duplicates  | ✅ CheckDuplicates                |
 | Длина строки          | ✅ line-length     | ✅ max_line_length                 |
-| Табы vs пробелы       | ✅ indentation     | ✅ TabInsteadOfSpaces             |
+| Табы vs пробелы       | ✅ indentation     | ✅ TabInsteadOfSpaces, indent_spaces (v1.22.0) |
 | document-start / EOF  | ✅                | ✅ style (v1.3.0)                  |
 | document-end (...)    | ✅                | ✅ style.require_document_end (v1.8.0) |
 | Пустые строки подряд  | ✅ empty-lines    | ✅ style.forbid_consecutive_empty_lines (v1.7.0) |
@@ -154,4 +154,4 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
 3. **Доп. форматы** — реализовано: `-o compact`, SARIF, **GitLab Code Quality** (`-o gitlab`), **GitHub Annotations** (`-o github-annotations`), **severity** (`-o severity`: `[ERROR] file:line: message`). Колонка в compact/SARIF, когда доступна.
 
-Документ обновлён по состоянию v1.21.0.
+Документ обновлён по состоянию v1.22.0.
