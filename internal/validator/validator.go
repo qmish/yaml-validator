@@ -29,8 +29,14 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		allErrors = append(allErrors, CheckDuplicates(node)...)
 	}
 
-	if rules.CheckKeyOrdering {
+	if len(rules.KeyOrder) > 0 {
+		allErrors = append(allErrors, CheckKeyOrderConfigurable(node, rules.KeyOrder)...)
+	} else if rules.CheckKeyOrdering {
 		allErrors = append(allErrors, CheckKeyOrdering(node)...)
+	}
+
+	if rules.MaxKeyNameLength > 0 {
+		allErrors = append(allErrors, CheckMaxKeyNameLength(node, rules.MaxKeyNameLength)...)
 	}
 
 	if rules.CheckIntegrity {

@@ -120,6 +120,8 @@ var configInitCmd = &cobra.Command{
   check_integrity: true
   check_common_errors: true
   check_key_ordering: false
+  key_order: []
+  max_key_name_length: 0
   inline_ignore: false
   style:
     require_document_start: false

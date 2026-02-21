@@ -34,8 +34,10 @@ type ValidationRules struct {
 	CheckDuplicates   bool              `yaml:"check_duplicates"`
 	CheckIntegrity    bool              `yaml:"check_integrity"`
 	CheckCommonErrors bool              `yaml:"check_common_errors"`
-	CheckKeyOrdering  bool              `yaml:"check_key_ordering"` // требовать лексикографический порядок ключей в маппингах
-	InlineIgnore     bool              `yaml:"inline_ignore"` // разрешить отключение правил через комментарии в YAML
+	CheckKeyOrdering   bool     `yaml:"check_key_ordering"`   // требовать лексикографический порядок ключей
+	KeyOrder           []string `yaml:"key_order"`            // приоритетный порядок ключей (напр. apiVersion, kind, metadata, spec)
+	MaxKeyNameLength   int      `yaml:"max_key_name_length"`  // максимальная длина имён ключей (0 = отключено)
+	InlineIgnore       bool     `yaml:"inline_ignore"`        // разрешить отключение правил через комментарии в YAML
 	Style             StyleOptions      `yaml:"style"`
 	K8sSchema        K8sSchemaOptions   `yaml:"k8s_schema"`
 	RequiredFields    []string          `yaml:"required_fields"`

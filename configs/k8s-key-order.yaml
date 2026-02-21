@@ -1,0 +1,22 @@
+# K8s: порядок ключей (metadata перед spec)
+# Использование: yaml-validator validate -c configs/k8s-key-order.yaml *.yaml
+
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: true
+  check_common_errors: true
+  check_key_ordering: false
+  key_order:
+    - apiVersion
+    - kind
+    - metadata
+    - spec
+    - data
+    - stringData
+  k8s_schema:
+    enabled: false
+  required_fields:
+    - apiVersion
+    - kind
+    - metadata.name

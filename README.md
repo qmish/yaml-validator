@@ -14,7 +14,7 @@
 - **Распространённые ошибки** — табуляции вместо пробелов, слишком длинные строки (>200 символов), чувствительные данные (password, token и т.д.)
 - **Плагины** — расширяемость через `ValidatorPlugin` (встроенный плагин для Kubernetes)
 - **K8s по схеме** — опциональная проверка по полной OpenAPI/JSON Schema Kubernetes (типы полей, все ресурсы), через [kubeconform](https://github.com/yannh/kubeconform)
-- **Правила стиля** — document-start (`---`), document-end (`...`), запрет пробелов и точек в конце строки, перевод строки в конце файла, запрет нескольких пустых строк подряд, отступ у комментариев, кавычки для ключей и значений; порядок ключей (конфиг `style:`, `check_key_ordering`)
+- **Правила стиля** — document-start (`---`), document-end (`...`), запрет пробелов и точек в конце строки, перевод строки в конце файла, запрет нескольких пустых строк подряд, отступ у комментариев, кавычки для ключей и значений; порядок ключей (`check_key_ordering` или `key_order`), длина имён ключей (`max_key_name_length`)
 - **Inline-игнор** — отключение правил через комментарии: `# yaml-validator disable-line rule:LineTooLong`, `# yaml-validator disable-next-line rule:TrailingSpaces`
 - **Логирование** — verbose режим, JSON-логи для ELK/Loki
 
@@ -74,7 +74,7 @@ yaml-validator validate config.yaml --log-json
 
 По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`.
 
-- **K8s-манифесты** — конфиг по умолчанию (проверка apiVersion, kind, metadata.name). Для проверки по **полной схеме K8s** (типы, все ресурсы): `-c configs/k8s-strict.yaml` (при первом запуске возможна загрузка схем по сети).
+- **K8s-манифесты** — конфиг по умолчанию (проверка apiVersion, kind, metadata.name). Для порядка ключей K8s (metadata перед spec): `-c configs/k8s-key-order.yaml`. Для полной схемы: `-c configs/k8s-strict.yaml`.
 - **docker-compose и другой YAML** — `-c configs/docker-compose.yaml` (без обязательных K8s-полей).
 
 ```yaml
@@ -84,6 +84,8 @@ rules:
   check_integrity: true
   check_common_errors: true
   check_key_ordering: false
+  key_order: []
+  max_key_name_length: 0
   required_fields:
     - apiVersion
     - kind
