@@ -15,6 +15,22 @@ func TestExitCodes(t *testing.T) {
 	}
 }
 
+func TestRulesListCommand(t *testing.T) {
+	rootCmd.SetArgs([]string{"rules", "list", "-o", "json"})
+	var buf bytes.Buffer
+	rootCmd.SetOut(&buf)
+	if err := rootCmd.Execute(); err != nil {
+		t.Fatal(err)
+	}
+	out := buf.String()
+	if !strings.Contains(out, "check_syntax") || !strings.Contains(out, "config_key") {
+		t.Errorf("Expected rules list JSON with check_syntax and config_key, got: %s", out)
+	}
+	if !strings.Contains(out, "rules.check_syntax") {
+		t.Errorf("Expected config_key rules.check_syntax in output, got: %s", out)
+	}
+}
+
 func TestVersionCommand(t *testing.T) {
 	rootCmd.SetArgs([]string{"version"})
 	var buf bytes.Buffer

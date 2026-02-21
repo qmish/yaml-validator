@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v3"
 
 	"yaml-validator/internal/config"
 	"yaml-validator/internal/logger"
@@ -220,6 +222,69 @@ var versionCmd = &cobra.Command{
 	},
 }
 
+// RuleDescriptor — правило для вывода rules list (машиночитаемый список)
+type RuleDescriptor struct {
+	ID          string `json:"id" yaml:"id"`
+	Description string `json:"description" yaml:"description"`
+	ConfigKey   string `json:"config_key" yaml:"config_key"`
+}
+
+var builtinRules = []RuleDescriptor{
+	{ID: "check_syntax", Description: "Проверка синтаксиса YAML", ConfigKey: "rules.check_syntax"},
+	{ID: "check_duplicates", Description: "Запрет дублирующихся ключей", ConfigKey: "rules.check_duplicates"},
+	{ID: "check_integrity", Description: "Наличие обязательных полей (required_fields)", ConfigKey: "rules.check_integrity"},
+	{ID: "check_common_errors", Description: "Табы, длина строки, чувствительные данные", ConfigKey: "rules.check_common_errors"},
+	{ID: "check_key_ordering", Description: "Порядок ключей (алфавитный)", ConfigKey: "rules.check_key_ordering"},
+	{ID: "key_order", Description: "Настраиваемый порядок ключей (key_order)", ConfigKey: "rules.key_order"},
+	{ID: "max_key_name_length", Description: "Максимальная длина имени ключа", ConfigKey: "rules.max_key_name_length"},
+	{ID: "inline_ignore", Description: "Комментарии для отключения правил в YAML", ConfigKey: "rules.inline_ignore"},
+	{ID: "require_document_start", Description: "Требовать --- в начале документа", ConfigKey: "rules.style.require_document_start"},
+	{ID: "forbid_trailing_spaces", Description: "Запрет пробелов в конце строки", ConfigKey: "rules.style.forbid_trailing_spaces"},
+	{ID: "forbid_trailing_dots", Description: "Запрет точек в конце строки", ConfigKey: "rules.style.forbid_trailing_dots"},
+	{ID: "require_newline_at_eof", Description: "Перевод строки в конце файла", ConfigKey: "rules.style.require_newline_at_eof"},
+	{ID: "forbid_consecutive_empty_lines", Description: "Запрет нескольких пустых строк подряд", ConfigKey: "rules.style.forbid_consecutive_empty_lines"},
+	{ID: "require_empty_line_between_blocks", Description: "Пустая строка между топ-уровневыми блоками", ConfigKey: "rules.style.require_empty_line_between_blocks"},
+	{ID: "min_empty_lines_between_blocks", Description: "Минимум пустых строк между блоками", ConfigKey: "rules.style.min_empty_lines_between_blocks"},
+	{ID: "require_document_end", Description: "Требовать ... в конце документа", ConfigKey: "rules.style.require_document_end"},
+	{ID: "require_comments_indented", Description: "Комментарии с отступом блока", ConfigKey: "rules.style.require_comments_indented"},
+	{ID: "require_quoted_keys", Description: "Ключи в кавычках", ConfigKey: "rules.style.require_quoted_keys"},
+	{ID: "require_quoted_values", Description: "Строковые значения в кавычках", ConfigKey: "rules.style.require_quoted_values"},
+	{ID: "indent_spaces", Description: "Шаг отступов (2 или 4 пробела)", ConfigKey: "rules.style.indent_spaces"},
+	{ID: "forbid_tabs", Description: "Запрет табуляции", ConfigKey: "rules.style.forbid_tabs"},
+	{ID: "forbid_unicode", Description: "Запрет не-ASCII символов", ConfigKey: "rules.style.forbid_unicode"},
+	{ID: "forbid_bom", Description: "Запрет BOM в начале файла", ConfigKey: "rules.style.forbid_bom"},
+	{ID: "max_line_length", Description: "Максимальная длина строки", ConfigKey: "rules.max_line_length"},
+	{ID: "json_schema", Description: "Валидация по JSON Schema", ConfigKey: "rules.json_schema"},
+	{ID: "k8s_schema", Description: "Валидация по схеме Kubernetes", ConfigKey: "rules.k8s_schema"},
+	{ID: "docker_compose", Description: "Плагин: image или build у сервисов", ConfigKey: "plugins"},
+}
+
+var rulesListOutputFmt string
+
+var rulesListCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List validation rules (machine-readable)",
+	Long:  "Output list of rules in JSON or YAML for scripts and documentation.",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		switch rulesListOutputFmt {
+		case "json":
+			enc := json.NewEncoder(cmd.OutOrStdout())
+			enc.SetIndent("", "  ")
+			return enc.Encode(builtinRules)
+		case "yaml":
+			return yaml.NewEncoder(cmd.OutOrStdout()).Encode(builtinRules)
+		default:
+			return yaml.NewEncoder(cmd.OutOrStdout()).Encode(builtinRules)
+		}
+	},
+}
+
+var rulesCmd = &cobra.Command{
+	Use:   "rules",
+	Short: "List and describe validation rules",
+	Long:  "Subcommands: list — output rules in JSON/YAML for scripts and docs.",
+}
+
 func loadConfig() *config.Config {
 	paths := []string{configPath}
 	if configPath == "" {
@@ -255,8 +320,13 @@ func init() {
 	}
 	configCmd.AddCommand(configInitCmd)
 
+	rulesListCmd.Flags().StringVarP(&rulesListOutputFmt, "output", "o", "yaml", "Output format: json, yaml")
+
+	rulesCmd.AddCommand(rulesListCmd)
+
 	rootCmd.AddCommand(validateCmd)
 	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(rulesCmd)
 	rootCmd.AddCommand(versionCmd)
 }
 
