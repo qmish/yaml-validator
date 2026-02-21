@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
@@ -8,10 +9,10 @@ import (
 	"yaml-validator/pkg"
 )
 
-// CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys)
+// CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys, indent step)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
-		!opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys {
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 {
 		return nil
 	}
 
@@ -132,6 +133,26 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				continue
 			}
 			lastIndent = len(line) - len(strings.TrimLeft(line, " \t"))
+		}
+	}
+
+	if opts.IndentSpaces == 2 || opts.IndentSpaces == 4 {
+		for i, line := range lines {
+			if strings.TrimSpace(line) == "" {
+				continue
+			}
+			if strings.Contains(line, "\t") {
+				continue // TabInsteadOfSpaces в check_common_errors
+			}
+			indent := len(line) - len(strings.TrimLeft(line, " "))
+			if indent > 0 && indent%opts.IndentSpaces != 0 {
+				errors = append(errors, pkg.Error{
+					Type:       "IndentSpaces",
+					Message:    fmt.Sprintf("indent should be multiple of %d spaces, got %d", opts.IndentSpaces, indent),
+					Suggestion: fmt.Sprintf("use %d-space indent", opts.IndentSpaces),
+					Line:       i + 1,
+				})
+			}
 		}
 	}
 

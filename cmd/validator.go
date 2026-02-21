@@ -133,6 +133,7 @@ var configInitCmd = &cobra.Command{
     require_comments_indented: false
     require_quoted_keys: false
     require_quoted_values: false
+    indent_spaces: 0
   k8s_schema:
     enabled: false
     version: master

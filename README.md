@@ -101,6 +101,7 @@ rules:
     require_quoted_keys: false
     require_quoted_values: false
     forbid_trailing_dots: false
+    indent_spaces: 0
   k8s_schema:
     enabled: false
     version: master

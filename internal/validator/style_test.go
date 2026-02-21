@@ -162,6 +162,30 @@ func TestCheckStyle_RequireQuotedKeys_Ok(t *testing.T) {
 	assert.Empty(t, errors)
 }
 
+func TestCheckStyle_IndentSpaces(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	// 3 spaces indent - not multiple of 2
+	content := []byte("a: 1\nb:\n   3\n")
+	require.NoError(t, os.WriteFile(f, content, 0644))
+
+	opts := config.StyleOptions{IndentSpaces: 2}
+	errors := CheckStyle(f, opts)
+	require.NotEmpty(t, errors)
+	assert.Equal(t, "IndentSpaces", errors[0].Type)
+}
+
+func TestCheckStyle_IndentSpaces_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	content := []byte("a: 1\nb:\n  2\n    3\n")
+	require.NoError(t, os.WriteFile(f, content, 0644))
+
+	opts := config.StyleOptions{IndentSpaces: 2}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_Disabled(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

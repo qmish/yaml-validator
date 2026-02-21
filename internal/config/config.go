@@ -25,7 +25,8 @@ type StyleOptions struct {
 	RequireDocumentEnd  bool `yaml:"require_document_end"` // требовать ... в конце файла (много-документный YAML)
 	RequireCommentsIndented bool `yaml:"require_comments_indented"` // комментарии внутри блока должны иметь отступ (как в yamllint)
 	RequireQuotedKeys    bool `yaml:"require_quoted_keys"`    // ключи маппинга должны быть в кавычках
-	RequireQuotedValues  bool `yaml:"require_quoted_values"`  // строковые значения должны быть в кавычках (yamllint quoted-values)
+	RequireQuotedValues  bool `yaml:"require_quoted_values"`  // строковые значения должны быть в кавычках
+	IndentSpaces         int  `yaml:"indent_spaces"`          // шаг отступов (2 или 4 пробелов; 0 = отключено)
 }
 
 // ValidationRules определяет правила валидации
