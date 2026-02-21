@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.36.0] - 2026-02-21
+
+### Добавлено
+
+- **pre-commit (official)** (3.7) — hook подключается из репозитория: `repo: https://github.com/qmish/yaml-validator`. Добавлен `.pre-commit-hooks.yaml`, `docs/pre-commit.md`.
+
 ## [1.35.0] - 2026-02-21
 
 ### Добавлено

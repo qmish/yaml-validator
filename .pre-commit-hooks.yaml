@@ -1,0 +1,11 @@
+# Official pre-commit hook для yaml-validator
+# Использование: repo: https://github.com/qmish/yaml-validator
+# Требуется: Go в PATH
+# См. https://pre-commit.com/
+
+- id: yaml-validator
+  name: yaml-validator
+  description: Валидация YAML-файлов (синтаксис, дубликаты, стиль, K8s-схема)
+  entry: yaml-validator validate
+  language: golang
+  types: [yaml]

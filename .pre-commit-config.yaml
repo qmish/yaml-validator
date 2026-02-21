@@ -1,13 +1,20 @@
 # Pre-commit: проверка YAML перед коммитом
 # Установка: pre-commit install
-# Требуется: yaml-validator в PATH (go build или установить бинарник)
 # См. https://pre-commit.com/
 
+# Вариант 1: Official hook — устанавливается из репозитория (требуется Go)
 repos:
-  - repo: local
+  - repo: https://github.com/qmish/yaml-validator
+    rev: v1.36.0  # укажите нужную версию
     hooks:
       - id: yaml-validator
-        name: yaml-validator
-        entry: yaml-validator validate
-        language: system
-        types: [yaml]
+
+# Вариант 2: Local — yaml-validator должен быть в PATH (бинарник или go build)
+# repos:
+#   - repo: local
+#     hooks:
+#       - id: yaml-validator
+#         name: yaml-validator
+#         entry: yaml-validator validate
+#         language: system
+#         types: [yaml]

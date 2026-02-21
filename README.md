@@ -253,13 +253,20 @@ stage('Validate YAML') {
 }
 ```
 
-### Pre-commit (framework)
+### Pre-commit (official)
 
-В репозитории есть [.pre-commit-config.yaml](.pre-commit-config.yaml) для [pre-commit](https://pre-commit.com/):
+yaml-validator — [official pre-commit hook](docs/pre-commit.md). Добавьте в `.pre-commit-config.yaml`:
+
+```yaml
+repos:
+  - repo: https://github.com/qmish/yaml-validator
+    rev: v1.35.0
+    hooks:
+      - id: yaml-validator
+```
 
 ```bash
 pre-commit install
-# yaml-validator должен быть в PATH (go build или установить бинарник)
 ```
 
 ### Docker
