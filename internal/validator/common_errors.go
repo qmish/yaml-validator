@@ -34,11 +34,13 @@ func CheckCommonErrors(filename string, maxLineLength int, sensitivePatterns []s
 		}
 
 		if maxLineLength > 0 && len(line) > maxLineLength {
+			col := maxLineLength + 1 // первая позиция, превысившая лимит
 			errors = append(errors, pkg.Error{
 				Type:       "LineTooLong",
 				Message:    fmt.Sprintf("Line exceeds max length of %d characters (%d)", maxLineLength, len(line)),
 				Suggestion: "shorten line or split across multiple lines",
-				Line:    lineNum,
+				Line:       lineNum,
+				Column:     col,
 			})
 		}
 

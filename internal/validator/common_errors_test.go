@@ -19,6 +19,20 @@ func TestCheckCommonErrors_Tabs(t *testing.T) {
 	assert.Equal(t, "TabInsteadOfSpaces", errors[0].Type)
 }
 
+func TestCheckCommonErrors_LineTooLong_WithColumn(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "long.yaml")
+	content := "short\n"
+	content += "this is a very long line that exceeds twenty characters\n"
+	require.NoError(t, os.WriteFile(f, []byte(content), 0644))
+
+	errors := CheckCommonErrors(f, 20, nil, true)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "LineTooLong", errors[0].Type)
+	assert.Equal(t, 2, errors[0].Line)
+	assert.Equal(t, 21, errors[0].Column, "колонка — первая позиция, превысившая лимит")
+}
+
 func TestCheckCommonErrors_LineTooLong(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "long.yaml")
