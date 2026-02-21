@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.47.0] - 2026-02-21
+
+### Добавлено
+
+- **Плагин Helm/Kustomize** (6.5) — базовая валидация Helm Chart.yaml (apiVersion, name, version) и Kustomize kustomization.yaml (apiVersion с kustomize, resources или bases). Не реагирует на K8s-манифесты.
+
 ## [1.46.0] - 2026-02-21
 
 ### Добавлено

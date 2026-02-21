@@ -92,6 +92,7 @@ pkg.Error{
 - **kubernetes** — проверка apiVersion, kind, metadata.name и структуры K8s-манифестов.
 - **docker-compose** (v1.20.0) — проверка: у каждого сервиса должно быть `image` или `build`. Запускается только для файлов с секцией `services` (без `apiVersion`).
 - **ansible** (v1.46.0) — проверка структуры Ansible playbook: hosts или name в каждом play, tasks (module/include/role), roles (role spec должен иметь ключ `role`). Пропускает K8s и docker-compose файлы.
+- **helm-kustomize** (v1.47.0) — базовая валидация Helm Chart.yaml (apiVersion, name, version) и Kustomize kustomization.yaml (apiVersion с kustomize, resources или bases). Не реагирует на K8s-манифесты.
 
 ## Пример: проверка обязательного поля
 
