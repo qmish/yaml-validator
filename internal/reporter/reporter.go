@@ -87,6 +87,9 @@ func PrintHumanReadable(file string, errors []pkg.Error) {
 		} else {
 			fmt.Printf("  %d. [%s] %s\n", i+1, e.Type, e.Message)
 		}
+		if e.Suggestion != "" {
+			fmt.Printf("      To fix: %s\n", e.Suggestion)
+		}
 	}
 }
 

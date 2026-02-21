@@ -65,8 +65,9 @@ func (d *DockerComposeValidator) Validate(node *yaml.Node) []pkg.Error {
 					line = svcNode.Line
 				}
 				errors = append(errors, pkg.Error{
-					Type:    "DockerComposeServiceImage",
-					Message: "service '" + svcName + "' must have 'image' or 'build'",
+					Type:       "DockerComposeServiceImage",
+					Message:    "service '" + svcName + "' must have 'image' or 'build'",
+					Suggestion: "add 'image: <name>' or 'build: <path>' to service",
 					Path:    "services." + svcName,
 					Line:    line,
 					Column:  servicesNode.Content[i].Column,

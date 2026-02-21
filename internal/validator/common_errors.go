@@ -25,16 +25,18 @@ func CheckCommonErrors(filename string, maxLineLength int, sensitivePatterns []s
 
 		if strings.Contains(line, "\t") {
 			errors = append(errors, pkg.Error{
-				Type:    "TabInsteadOfSpaces",
-				Message: "Line contains tabs; use spaces for indentation",
+				Type:       "TabInsteadOfSpaces",
+				Message:    "Line contains tabs; use spaces for indentation",
+				Suggestion: "replace tabs with spaces",
 				Line:    lineNum,
 			})
 		}
 
 		if maxLineLength > 0 && len(line) > maxLineLength {
 			errors = append(errors, pkg.Error{
-				Type:    "LineTooLong",
-				Message: fmt.Sprintf("Line exceeds max length of %d characters (%d)", maxLineLength, len(line)),
+				Type:       "LineTooLong",
+				Message:    fmt.Sprintf("Line exceeds max length of %d characters (%d)", maxLineLength, len(line)),
+				Suggestion: "shorten line or split across multiple lines",
 				Line:    lineNum,
 			})
 		}

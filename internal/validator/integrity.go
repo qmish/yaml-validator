@@ -26,8 +26,9 @@ func CheckIntegrity(node *yaml.Node, requiredFields []string) []pkg.Error {
 	for _, field := range requiredFields {
 		if _, exists := fields[field]; !exists {
 			errors = append(errors, pkg.Error{
-				Type:    "MissingRequiredField",
-				Message: fmt.Sprintf("Required field '%s' is missing", field),
+				Type:       "MissingRequiredField",
+				Message:    fmt.Sprintf("Required field '%s' is missing", field),
+				Suggestion: fmt.Sprintf("add field '%s'", field),
 				Path:    field,
 			})
 		}

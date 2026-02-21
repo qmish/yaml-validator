@@ -25,10 +25,11 @@ func CheckQuotedValues(node *yaml.Node) []pkg.Error {
 			line = 1
 		}
 		errors = append(errors, pkg.Error{
-			Type:    "QuotedValues",
-			Message: "string value should be quoted",
-			Line:    line,
-			Column:  n.Column,
+			Type:       "QuotedValues",
+			Message:    "string value should be quoted",
+			Suggestion: "wrap value in double or single quotes",
+			Line:       line,
+			Column:     n.Column,
 		})
 	})
 	return errors

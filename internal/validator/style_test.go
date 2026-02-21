@@ -43,6 +43,27 @@ func TestCheckStyle_TrailingSpaces(t *testing.T) {
 	assert.Equal(t, "TrailingSpaces", errors[0].Type)
 }
 
+func TestCheckStyle_ForbidTrailingDots(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key: value.\n"), 0644))
+
+	opts := config.StyleOptions{ForbidTrailingDots: true}
+	errors := CheckStyle(f, opts)
+	require.Len(t, errors, 1)
+	assert.Equal(t, "TrailingDots", errors[0].Type)
+}
+
+func TestCheckStyle_ForbidTrailingDots_Ok(t *testing.T) {
+	tmp := t.TempDir()
+	f := filepath.Join(tmp, "doc.yaml")
+	require.NoError(t, os.WriteFile(f, []byte("key: value\n---\n...\n"), 0644))
+
+	opts := config.StyleOptions{ForbidTrailingDots: true}
+	errors := CheckStyle(f, opts)
+	assert.Empty(t, errors)
+}
+
 func TestCheckStyle_RequireNewlineAtEof(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "doc.yaml")

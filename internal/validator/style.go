@@ -29,9 +29,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 		firstLine := strings.TrimSpace(lines[0])
 		if firstLine != "" && firstLine != "---" {
 			errors = append(errors, pkg.Error{
-				Type:    "DocumentStart",
-				Message: "document should start with '---'",
-				Line:    1,
+				Type:       "DocumentStart",
+				Message:    "document should start with '---'",
+				Suggestion: "add '---' at the start of the file",
+				Line:       1,
 			})
 		}
 	}
@@ -40,9 +41,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 		for i, line := range lines {
 			if len(line) > 0 && (line[len(line)-1] == ' ' || line[len(line)-1] == '\t') {
 				errors = append(errors, pkg.Error{
-					Type:    "TrailingSpaces",
-					Message: "trailing spaces at end of line",
-					Line:    i + 1,
+					Type:       "TrailingSpaces",
+					Message:    "trailing spaces at end of line",
+					Suggestion: "remove trailing spaces",
+					Line:       i + 1,
 				})
 			}
 		}
@@ -53,9 +55,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 			trimmed := strings.TrimSpace(line)
 			if trimmed != "" && trimmed != "..." && strings.HasSuffix(trimmed, ".") {
 				errors = append(errors, pkg.Error{
-					Type:    "TrailingDots",
-					Message: "forbid trailing dots at end of line",
-					Line:    i + 1,
+					Type:       "TrailingDots",
+					Message:    "forbid trailing dots at end of line",
+					Suggestion: "remove trailing dot",
+					Line:       i + 1,
 				})
 			}
 		}
@@ -64,9 +67,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 	if opts.RequireNewlineAtEof && len(data) > 0 {
 		if data[len(data)-1] != '\n' {
 			errors = append(errors, pkg.Error{
-				Type:    "NewlineAtEof",
-				Message: "missing newline at end of file",
-				Line:    len(lines),
+				Type:       "NewlineAtEof",
+				Message:    "missing newline at end of file",
+				Suggestion: "add newline at end of file",
+				Line:       len(lines),
 			})
 		}
 	}
@@ -78,9 +82,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				emptyCount++
 				if emptyCount > 1 {
 					errors = append(errors, pkg.Error{
-						Type:    "ConsecutiveEmptyLines",
-						Message: "more than one consecutive empty line",
-						Line:    i + 1,
+						Type:       "ConsecutiveEmptyLines",
+						Message:    "more than one consecutive empty line",
+						Suggestion: "leave at most one empty line",
+						Line:       i + 1,
 					})
 				}
 			} else {
@@ -96,9 +101,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				lastNonEmptyLine = i + 1
 				if strings.TrimSpace(lines[i]) != "..." {
 					errors = append(errors, pkg.Error{
-						Type:    "DocumentEnd",
-						Message: "document should end with '...'",
-						Line:    lastNonEmptyLine,
+						Type:       "DocumentEnd",
+						Message:    "document should end with '...'",
+						Suggestion: "add '...' at end of document",
+						Line:       lastNonEmptyLine,
 					})
 				}
 				break
@@ -117,9 +123,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 				commentIndent := len(line) - len(strings.TrimLeft(line, " \t"))
 				if lastIndent > 0 && commentIndent == 0 {
 					errors = append(errors, pkg.Error{
-						Type:    "CommentIndentation",
-						Message: "comment should be indented to match the block",
-						Line:    i + 1,
+						Type:       "CommentIndentation",
+						Message:    "comment should be indented to match the block",
+						Suggestion: "indent comment to match block",
+						Line:       i + 1,
 					})
 				}
 				continue
@@ -147,9 +154,10 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 			}
 			if keyPart[0] != '"' && keyPart[0] != '\'' {
 				errors = append(errors, pkg.Error{
-					Type:    "QuotedKeys",
-					Message: "mapping key should be quoted",
-					Line:    i + 1,
+					Type:       "QuotedKeys",
+					Message:    "mapping key should be quoted",
+					Suggestion: "wrap key in double or single quotes",
+					Line:       i + 1,
 				})
 			}
 		}

@@ -23,8 +23,9 @@ func CheckKeyOrdering(node *yaml.Node) []pkg.Error {
 			key, next := keyNode.Value, nextKeyNode.Value
 			if key > next {
 				e := pkg.Error{
-					Type:    "KeyOrdering",
-					Message: fmt.Sprintf("key '%s' should be before '%s' (lexicographic order)", next, key),
+					Type:       "KeyOrdering",
+					Message:    fmt.Sprintf("key '%s' should be before '%s' (lexicographic order)", next, key),
+					Suggestion: "reorder keys lexicographically",
 					Line:    nextKeyNode.Line,
 					Column:  nextKeyNode.Column,
 				}
@@ -68,10 +69,11 @@ func CheckKeyOrderConfigurable(node *yaml.Node, order []string) []pkg.Error {
 			pi, pj := keyPriority(key, order), keyPriority(next, order)
 			if pi > pj {
 				e := pkg.Error{
-					Type:    "KeyOrderConfigurable",
-					Message: fmt.Sprintf("key '%s' should be before '%s'", next, key),
-					Line:    nextKeyNode.Line,
-					Column:  nextKeyNode.Column,
+					Type:       "KeyOrderConfigurable",
+					Message:    fmt.Sprintf("key '%s' should be before '%s'", next, key),
+					Suggestion: "reorder keys as per config",
+					Line:       nextKeyNode.Line,
+					Column:     nextKeyNode.Column,
 				}
 				if e.Line <= 0 {
 					e.Line = keyNode.Line
@@ -104,8 +106,9 @@ func CheckMaxKeyNameLength(node *yaml.Node, maxLen int) []pkg.Error {
 					line = 1
 				}
 				errors = append(errors, pkg.Error{
-					Type:    "MaxKeyNameLength",
-					Message: fmt.Sprintf("key name '%s' exceeds max length %d", keyNode.Value, maxLen),
+					Type:       "MaxKeyNameLength",
+					Message:    fmt.Sprintf("key name '%s' exceeds max length %d", keyNode.Value, maxLen),
+					Suggestion: "shorten key name",
 					Line:    line,
 					Column:  keyNode.Column,
 				})
