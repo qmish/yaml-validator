@@ -145,7 +145,7 @@ type ValidatorPlugin interface {
 func RegisterPlugin(name string, plugin ValidatorPlugin)
 ```
 
-Встроенный плагин `kubernetes` проверяет K8s-манифесты (apiVersion, kind, metadata).
+Встроенные плагины: `kubernetes` (apiVersion, kind, metadata), `docker-compose` (image/build у сервисов).
 
 ## Тестирование
 
