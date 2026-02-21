@@ -91,6 +91,7 @@ pkg.Error{
 
 - **kubernetes** — проверка apiVersion, kind, metadata.name и структуры K8s-манифестов.
 - **docker-compose** (v1.20.0) — проверка: у каждого сервиса должно быть `image` или `build`. Запускается только для файлов с секцией `services` (без `apiVersion`).
+- **ansible** (v1.46.0) — проверка структуры Ansible playbook: hosts или name в каждом play, tasks (module/include/role), roles (role spec должен иметь ключ `role`). Пропускает K8s и docker-compose файлы.
 
 ## Пример: проверка обязательного поля
 
