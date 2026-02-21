@@ -1,11 +1,38 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
+
+// ParseFileMulti читает и парсит мультидокументный YAML-файл, возвращает срез узлов (по одному на документ)
+func ParseFileMulti(filename string) ([]*yaml.Node, error) {
+	data, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	dec := yaml.NewDecoder(bytes.NewReader(data))
+	var nodes []*yaml.Node
+	for {
+		var node yaml.Node
+		err := dec.Decode(&node)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
+		nodes = append(nodes, &node)
+	}
+	if len(nodes) == 0 {
+		return nil, fmt.Errorf("no YAML documents in file")
+	}
+	return nodes, nil
+}
 
 // NodeInfo содержит информацию об узле YAML
 type NodeInfo struct {

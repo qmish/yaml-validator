@@ -112,18 +112,22 @@ func PrintHumanReadable(file string, errors []pkg.Error) {
 }
 
 // GenerateCompactReport возвращает вывод в формате file:line[:col]: message (ESLint-style).
-// Если задана колонка (Column > 0), выводится file:line:col: message.
+// Для мультидокумента (DocumentIndex > 0) используется file#docN.
 func GenerateCompactReport(file string, errors []pkg.Error) string {
 	var sb strings.Builder
 	for _, e := range errors {
+		displayFile := file
+		if e.DocumentIndex > 0 {
+			displayFile = fmt.Sprintf("%s#doc%d", file, e.DocumentIndex)
+		}
 		if e.Line > 0 {
 			if e.Column > 0 {
-				sb.WriteString(fmt.Sprintf("%s:%d:%d: %s\n", file, e.Line, e.Column, e.Message))
+				sb.WriteString(fmt.Sprintf("%s:%d:%d: %s\n", displayFile, e.Line, e.Column, e.Message))
 			} else {
-				sb.WriteString(fmt.Sprintf("%s:%d: %s\n", file, e.Line, e.Message))
+				sb.WriteString(fmt.Sprintf("%s:%d: %s\n", displayFile, e.Line, e.Message))
 			}
 		} else {
-			sb.WriteString(fmt.Sprintf("%s: %s\n", file, e.Message))
+			sb.WriteString(fmt.Sprintf("%s: %s\n", displayFile, e.Message))
 		}
 	}
 	return sb.String()
@@ -138,15 +142,19 @@ func PrintCompact(file string, errors []pkg.Error) {
 func GenerateGitHubAnnotations(file string, errors []pkg.Error) string {
 	var sb strings.Builder
 	for _, e := range errors {
+		displayFile := file
+		if e.DocumentIndex > 0 {
+			displayFile = fmt.Sprintf("%s#doc%d", file, e.DocumentIndex)
+		}
 		msg := strings.ReplaceAll(e.Message, "%", "%25")
 		level := "error"
 		if e.Severity == "warning" {
 			level = "warning"
 		}
 		if e.Line > 0 {
-			sb.WriteString(fmt.Sprintf("::%s file=%s,line=%d::%s\n", level, file, e.Line, msg))
+			sb.WriteString(fmt.Sprintf("::%s file=%s,line=%d::%s\n", level, displayFile, e.Line, msg))
 		} else {
-			sb.WriteString(fmt.Sprintf("::%s file=%s::%s\n", level, file, msg))
+			sb.WriteString(fmt.Sprintf("::%s file=%s::%s\n", level, displayFile, msg))
 		}
 	}
 	return sb.String()
@@ -161,18 +169,22 @@ func PrintGitHubAnnotations(file string, errors []pkg.Error) {
 func GenerateSeverityReport(file string, errors []pkg.Error) string {
 	var sb strings.Builder
 	for _, e := range errors {
+		displayFile := file
+		if e.DocumentIndex > 0 {
+			displayFile = fmt.Sprintf("%s#doc%d", file, e.DocumentIndex)
+		}
 		sev := "[ERROR]"
 		if e.Severity == "warning" {
 			sev = "[WARN]"
 		}
 		if e.Line > 0 {
 			if e.Column > 0 {
-				sb.WriteString(fmt.Sprintf("%s %s:%d:%d: %s\n", sev, file, e.Line, e.Column, e.Message))
+				sb.WriteString(fmt.Sprintf("%s %s:%d:%d: %s\n", sev, displayFile, e.Line, e.Column, e.Message))
 			} else {
-				sb.WriteString(fmt.Sprintf("%s %s:%d: %s\n", sev, file, e.Line, e.Message))
+				sb.WriteString(fmt.Sprintf("%s %s:%d: %s\n", sev, displayFile, e.Line, e.Message))
 			}
 		} else {
-			sb.WriteString(fmt.Sprintf("%s %s: %s\n", sev, file, e.Message))
+			sb.WriteString(fmt.Sprintf("%s %s: %s\n", sev, displayFile, e.Message))
 		}
 	}
 	return sb.String()

@@ -1,12 +1,15 @@
 package validator
 
 import (
+	"gopkg.in/yaml.v3"
+
 	"yaml-validator/internal/config"
 	"yaml-validator/internal/parser"
 	"yaml-validator/pkg"
 )
 
-// Validate выполняет полную валидацию YAML-файла согласно конфигурации
+// Validate выполняет полную валидацию YAML-файла согласно конфигурации.
+// Для мультидокументных файлов каждый документ валидируется отдельно, ошибки содержат DocumentIndex.
 func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 	var allErrors []pkg.Error
 
@@ -16,49 +19,15 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 
 	rules := cfg.Rules
 
-	if rules.CheckSyntax {
-		allErrors = append(allErrors, CheckSyntax(filename)...)
-	}
-
-	node, err := parser.ParseFile(filename)
+	nodes, err := parser.ParseFileMulti(filename)
 	if err != nil {
+		if rules.CheckSyntax {
+			allErrors = append(allErrors, CheckSyntax(filename)...)
+		}
 		return allErrors, err
 	}
 
-	if rules.CheckDuplicates {
-		allErrors = append(allErrors, CheckDuplicates(node)...)
-	}
-
-	if len(rules.KeyOrder) > 0 {
-		allErrors = append(allErrors, CheckKeyOrderConfigurable(node, rules.KeyOrder)...)
-	} else if rules.CheckKeyOrdering {
-		allErrors = append(allErrors, CheckKeyOrdering(node)...)
-	}
-
-	if rules.MaxKeyNameLength > 0 {
-		allErrors = append(allErrors, CheckMaxKeyNameLength(node, rules.MaxKeyNameLength)...)
-	}
-
-	if rules.ForbidDefaultValues && len(rules.DefaultValues) > 0 {
-		allErrors = append(allErrors, CheckForbidDefaultValues(node, rules.DefaultValues)...)
-	}
-
-	if len(rules.UniqueListFields) > 0 {
-		allErrors = append(allErrors, CheckUniqueListFields(node, rules.UniqueListFields)...)
-	}
-
-	if len(rules.KeyValuePatterns) > 0 {
-		allErrors = append(allErrors, CheckKeyValuePatterns(node, rules.KeyValuePatterns)...)
-	}
-
-	if rules.CheckIntegrity {
-		fields := rules.RequiredFields
-		if len(fields) == 0 {
-			fields = config.DefaultConfig().Rules.RequiredFields
-		}
-		allErrors = append(allErrors, CheckIntegrity(node, fields)...)
-	}
-
+	// Файл-уровень: один раз
 	if rules.CheckCommonErrors {
 		maxLen := rules.MaxLineLength
 		if maxLen <= 0 {
@@ -70,33 +39,49 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 		}
 		allErrors = append(allErrors, CheckCommonErrors(filename, maxLen, patterns, rules.Style.ForbidTabs)...)
 	}
-
 	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.ForbidTrailingDots ||
 		rules.Style.RequireNewlineAtEof || rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireEmptyLineBetweenBlocks || rules.Style.MinEmptyLinesBetweenBlocks >= 1 || rules.Style.RequireDocumentEnd ||
 		rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys || rules.Style.IndentSpaces > 0 || rules.Style.ForbidTabs || rules.Style.ForbidUnicode || rules.Style.ForbidBOM {
 		allErrors = append(allErrors, CheckStyle(filename, rules.Style)...)
 	}
 
-	if rules.Style.RequireQuotedValues {
-		allErrors = append(allErrors, CheckQuotedValues(node)...)
+	// Уровень документа: каждый документ отдельно
+	for i, node := range nodes {
+		idx := 0
+		if len(nodes) > 1 {
+			idx = i + 1
+		}
+		docErrs := validateNode(node, rules, cfg)
+		for _, e := range docErrs {
+			e.DocumentIndex = idx
+			allErrors = append(allErrors, e)
+		}
 	}
 
+	// JsonSchema и K8sSchema — читают файл, проверяют первый документ
 	if rules.JsonSchema.Enabled && rules.JsonSchema.SchemaPath != "" {
-		allErrors = append(allErrors, CheckJsonSchema(filename, rules.JsonSchema)...)
+		jsErrs := CheckJsonSchema(filename, rules.JsonSchema)
+		for _, e := range jsErrs {
+			if len(nodes) > 1 {
+				e.DocumentIndex = 1
+			}
+			allErrors = append(allErrors, e)
+		}
 	}
-
 	if rules.K8sSchema.Enabled {
-		allErrors = append(allErrors, CheckK8sSchema(filename, rules.K8sSchema)...)
+		k8sErrs := CheckK8sSchema(filename, rules.K8sSchema)
+		for _, e := range k8sErrs {
+			if len(nodes) > 1 {
+				e.DocumentIndex = 1
+			}
+			allErrors = append(allErrors, e)
+		}
 	}
-
-	// Запуск зарегистрированных плагинов
-	allErrors = append(allErrors, RunPlugins(node)...)
 
 	if rules.InlineIgnore {
 		allErrors = FilterInlineIgnore(filename, allErrors)
 	}
 
-	// 5.7: применяем rule_severity — часть правил как warning
 	for i := range allErrors {
 		if allErrors[i].Severity != "" {
 			continue
@@ -109,4 +94,40 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 	}
 
 	return allErrors, nil
+}
+
+func validateNode(node *yaml.Node, rules config.ValidationRules, cfg *config.Config) []pkg.Error {
+	var errs []pkg.Error
+	if rules.CheckDuplicates {
+		errs = append(errs, CheckDuplicates(node)...)
+	}
+	if len(rules.KeyOrder) > 0 {
+		errs = append(errs, CheckKeyOrderConfigurable(node, rules.KeyOrder)...)
+	} else if rules.CheckKeyOrdering {
+		errs = append(errs, CheckKeyOrdering(node)...)
+	}
+	if rules.MaxKeyNameLength > 0 {
+		errs = append(errs, CheckMaxKeyNameLength(node, rules.MaxKeyNameLength)...)
+	}
+	if rules.ForbidDefaultValues && len(rules.DefaultValues) > 0 {
+		errs = append(errs, CheckForbidDefaultValues(node, rules.DefaultValues)...)
+	}
+	if len(rules.UniqueListFields) > 0 {
+		errs = append(errs, CheckUniqueListFields(node, rules.UniqueListFields)...)
+	}
+	if len(rules.KeyValuePatterns) > 0 {
+		errs = append(errs, CheckKeyValuePatterns(node, rules.KeyValuePatterns)...)
+	}
+	if rules.CheckIntegrity {
+		fields := rules.RequiredFields
+		if len(fields) == 0 {
+			fields = config.DefaultConfig().Rules.RequiredFields
+		}
+		errs = append(errs, CheckIntegrity(node, fields)...)
+	}
+	if rules.Style.RequireQuotedValues {
+		errs = append(errs, CheckQuotedValues(node)...)
+	}
+	errs = append(errs, RunPlugins(node)...)
+	return errs
 }

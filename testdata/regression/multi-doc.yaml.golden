@@ -1,0 +1,1 @@
+testdata/regression/multi-doc.yaml#doc2:13:3: Duplicate key 'name' found in paths: metadata.name, metadata.name
