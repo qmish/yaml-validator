@@ -127,7 +127,7 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 | Обязательные поля K8s     | ❌       | через схему          | ✅             |
 | Схема K8s (типы, API)     | ❌       | ✅                   | ✅ опц. (v1.2.0, kubeconform) |
 | Чувствительные данные     | ❌       | ❌                   | ✅             |
-| Плагины / свои проверки   | ❌       | ❌                   | ✅             |
+| Плагины / свои проверки   | ❌       | ❌                   | ✅ (K8s, docker-compose v1.20.0) |
 | JSON/JUnit/SARIF отчёт    | огранич. | разное               | ✅ (v1.5.0 SARIF) |
 | Один бинарник (Go)        | ❌       | ✅                   | ✅             |
 | Любой YAML (не только K8s)| ✅       | ❌                   | ✅             |
@@ -154,4 +154,4 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
 3. **Доп. форматы** — реализовано: `-o compact`, SARIF, **GitLab Code Quality** (`-o gitlab`), **GitHub Annotations** (`-o github-annotations`), **severity** (`-o severity`: `[ERROR] file:line: message`). Колонка в compact/SARIF, когда доступна.
 
-Документ обновлён по состоянию v1.19.0.
+Документ обновлён по состоянию v1.20.0.
