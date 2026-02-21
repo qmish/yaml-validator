@@ -1,0 +1,22 @@
+# K8s: регулярки для имён (5.6)
+# Использование: yaml-validator validate -c configs/k8s-name-patterns.yaml *.yaml
+#
+# metadata.name: K8s DNS-подобное имя ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+# metadata.keys: lowercase-hyphen для ключей
+
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: true
+  check_common_errors: true
+  key_value_patterns:
+    - path: "metadata.name"
+      pattern: "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+      target: "values"
+    - path: "metadata"
+      pattern: "^[a-z][a-z0-9-]*$"
+      target: "keys"
+  required_fields:
+    - apiVersion
+    - kind
+    - metadata.name

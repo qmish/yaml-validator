@@ -48,6 +48,13 @@ type UniqueListField struct {
 	Field string `yaml:"field"` // поле для проверки уникальности, напр. "name"
 }
 
+// KeyValuePattern — правило соответствия ключа или значения регулярному выражению (5.6)
+type KeyValuePattern struct {
+	Path    string `yaml:"path"`    // путь (пусто = все ключи/значения)
+	Pattern string `yaml:"pattern"` // regexp
+	Target  string `yaml:"target"`  // "keys" или "values"
+}
+
 // ValidationRules определяет правила валидации
 type ValidationRules struct {
 	CheckSyntax       bool              `yaml:"check_syntax"`
@@ -59,8 +66,9 @@ type ValidationRules struct {
 	MaxKeyNameLength     int               `yaml:"max_key_name_length"`     // максимальная длина имён ключей (0 = отключено)
 	ForbidDefaultValues  bool                `yaml:"forbid_default_values"`   // запрет ключей со значением по умолчанию (5.4)
 	DefaultValues        map[string]string   `yaml:"default_values"`          // ключ -> значение по умолчанию
-	UniqueListFields    []UniqueListField    `yaml:"unique_list_fields"`      // уникальность элементов по полю (5.5)
-	InlineIgnore        bool                `yaml:"inline_ignore"`            // разрешить отключение правил через комментарии в YAML
+	UniqueListFields     []UniqueListField     `yaml:"unique_list_fields"`       // уникальность элементов по полю (5.5)
+	KeyValuePatterns     []KeyValuePattern     `yaml:"key_value_patterns"`       // regexp для ключей/значений (5.6)
+	InlineIgnore         bool                 `yaml:"inline_ignore"`             // разрешить отключение правил через комментарии в YAML
 	Style             StyleOptions      `yaml:"style"`
 	JsonSchema        JsonSchemaOptions `yaml:"json_schema"`
 	K8sSchema        K8sSchemaOptions   `yaml:"k8s_schema"`
