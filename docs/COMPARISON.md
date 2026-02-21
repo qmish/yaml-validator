@@ -42,7 +42,7 @@
 | Пустые строки подряд  | ✅ empty-lines    | ✅ style.forbid_consecutive_empty_lines (v1.7.0) |
 | Trailing spaces       | ✅                | ✅ style.forbid_trailing_spaces    |
 | Отступ комментариев   | ✅ comment-indentation | ✅ style.require_comments_indented |
-| Порядок ключей        | ✅ key-ordering    | ✅ check_key_ordering               |
+| Порядок ключей        | ✅ key-ordering    | ✅ check_key_ordering, key_order (v1.19.0) |
 | Ключи в кавычках      | ✅ quoted-strings  | ✅ style.require_quoted_keys        |
 | Строковые значения в кавычках | ✅ quoted-values | ✅ style.require_quoted_values (v1.18.0) |
 | Inline disable        | ✅ disable-line    | ✅ disable-line / disable-next-line (v1.4.0) |
@@ -154,4 +154,4 @@ yq — инструмент обработки YAML, а не линтер. yaml-
 2. **Интеграции** — готовый pre-commit (`.pre-commit-config.yaml`), примеры в README для GitLab CI и Jenkins (Docker и бинарник).
 3. **Доп. форматы** — реализовано: `-o compact`, SARIF, **GitLab Code Quality** (`-o gitlab`), **GitHub Annotations** (`-o github-annotations`), **severity** (`-o severity`: `[ERROR] file:line: message`). Колонка в compact/SARIF, когда доступна.
 
-Документ обновлён по состоянию v1.18.0.
+Документ обновлён по состоянию v1.19.0.
