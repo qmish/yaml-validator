@@ -1,0 +1,1 @@
+testdata/regression/duplicate-keys.yaml:5:3: Duplicate key 'name' found in paths: metadata.name, metadata.name

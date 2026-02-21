@@ -1,0 +1,1 @@
+testdata/regression/missing-required.yaml: Required field 'metadata.name' is missing

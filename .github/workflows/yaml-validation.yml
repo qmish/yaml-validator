@@ -20,6 +20,9 @@ jobs:
       - name: Run tests
         run: go test ./... -v -short
 
+      - name: Regression tests
+        run: go test ./internal/regression/... -v
+
       - name: Validate YAML files
         run: |
           ./yaml-validator validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
