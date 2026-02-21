@@ -236,6 +236,7 @@ var configInitCmd = &cobra.Command{
   json_schema:
     enabled: false
     schema_path: ""
+    schema_cache_dir: ""
   k8s_schema:
     enabled: false
     version: master

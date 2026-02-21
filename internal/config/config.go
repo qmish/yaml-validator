@@ -10,8 +10,9 @@ import (
 
 // JsonSchemaOptions настройки проверки по произвольной JSON Schema
 type JsonSchemaOptions struct {
-	Enabled    bool   `yaml:"enabled"`
-	SchemaPath string `yaml:"schema_path"` // путь к файлу схемы (JSON или YAML)
+	Enabled        bool   `yaml:"enabled"`
+	SchemaPath     string `yaml:"schema_path"`     // путь к файлу или URL (https://...)
+	SchemaCacheDir string `yaml:"schema_cache_dir"` // кэш схем по URL (пусто = без кэша)
 }
 
 // K8sSchemaOptions настройки проверки по OpenAPI-схеме Kubernetes

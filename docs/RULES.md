@@ -53,7 +53,7 @@
 
 | Правило | Ключ | Описание |
 |--------|------|----------|
-| **json_schema** | `rules.json_schema` | Валидация по произвольной JSON Schema. `enabled`, `schema_path`. |
+| **json_schema** | `rules.json_schema` | Валидация по произвольной JSON Schema. `enabled`, `schema_path` (файл или https://...), `schema_cache_dir` (кэш схем по URL). |
 | **k8s_schema** | `rules.k8s_schema` | Валидация по OpenAPI-схеме Kubernetes. `enabled`, `version`, `strict`, `cache_dir`, `ignore_missing_schemas`. |
 
 ---
@@ -106,6 +106,7 @@ rules:
   json_schema:
     enabled: false
     schema_path: ""
+    schema_cache_dir: ""  # при schema_path по URL — каталог для кэша
   k8s_schema:
     enabled: false
     version: master

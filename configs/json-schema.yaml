@@ -1,6 +1,7 @@
 # Пример конфигурации с проверкой по произвольной JSON Schema
 # Использование: yaml-validator validate file.yaml -c configs/json-schema.yaml
-# Путь к схеме — относительно текущей директории или абсолютный.
+# schema_path — путь к файлу (относительный или абсолютный) или URL (https://...)
+# schema_cache_dir — при URL-схеме каталог для кэша (пусто = без кэша)
 rules:
   check_syntax: true
   check_duplicates: true
@@ -13,6 +14,7 @@ rules:
   json_schema:
     enabled: true
     schema_path: testdata/schemas/config-schema.json
+    # schema_cache_dir: ""  # при schema_path по URL — каталог для кэша
   k8s_schema:
     enabled: false
   required_fields: []
