@@ -1,7 +1,7 @@
 # Makefile для yaml-validator
 # Использование: make build | test | validate | docker
 
-.PHONY: build test validate docker clean help benchmark
+.PHONY: build test test-coverage lint validate docker clean help benchmark
 
 BINARY := yaml-validator
 GOFLAGS := -v
@@ -10,6 +10,8 @@ help:
 	@echo "Доступные цели:"
 	@echo "  make build    - собрать бинарник"
 	@echo "  make test     - запустить тесты"
+	@echo "  make test-coverage - тесты с покрытием"
+	@echo "  make lint     - golangci-lint и go vet"
 	@echo "  make validate  - проверить тестовые YAML"
 	@echo "  make benchmark - запустить бенчмарки производительности"
 	@echo "  make docker   - собрать Docker образ"
@@ -25,6 +27,10 @@ build-cross:
 
 test:
 	go test ./... -v -short
+
+lint:
+	go vet ./...
+	golangci-lint run ./...
 
 test-coverage:
 	go test ./... -coverprofile=coverage.out -short

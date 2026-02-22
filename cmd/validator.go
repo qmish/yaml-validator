@@ -65,155 +65,26 @@ var validateCmd = &cobra.Command{
 			return
 		}
 		logger.Debug("Loaded config: check_syntax=%v, check_duplicates=%v", baseCfg.Rules.CheckSyntax, baseCfg.Rules.CheckDuplicates)
+		totalErrors, totalWarnings, hasErrors := validateAndReportFiles(baseCfg, args)
+
 		exitCode := ExitOK
-		hasErrors := false
-		totalErrors := 0
-		totalWarnings := 0
-		var sarifResults []reporter.FileResult
-		var gitlabResults []reporter.FileResult
-		var checkstyleResults []reporter.FileResult
-
-		for _, file := range args {
-			logger.Debug("Validating file: %s", file)
-			absPath, err := filepath.Abs(file)
-			if err != nil {
-				absPath = file
-			}
-
-			cfg := config.ConfigForFile(baseCfg, absPath)
-			if fix {
-				// При --fix всегда применяем fixable-правила (trailing spaces, newline at EOF, consecutive empty lines)
-				fixCfg := *cfg
-				fixCfg.Rules.Style.ForbidTrailingSpaces = true
-				fixCfg.Rules.Style.RequireNewlineAtEof = true
-				fixCfg.Rules.Style.ForbidConsecutiveEmptyLines = true
-				fixRes, fixErr := fixer.FixFile(absPath, &fixCfg)
-				if fixErr != nil {
-					logger.Error("Fix failed for %s: %v", file, fixErr)
-					fmt.Fprintf(os.Stderr, "Fix failed for %s: %v\n", file, fixErr)
-					hasErrors = true
-					continue
-				}
-				if fixRes.Modified && !quiet {
-					fmt.Printf("Fixed %s: %v\n", file, fixRes.Applied)
-				}
-			}
-
-			errors, err := validator.Validate(absPath, cfg)
-			if err != nil {
-				logger.Error("Validation failed for %s: %v", file, err)
-				fmt.Fprintf(os.Stderr, "Error validating %s: %v\n", file, err)
-				hasErrors = true
-				continue
-			}
-			logger.Debug("File %s: %d issue(s)", file, len(errors))
-
-			// 5.7: считаем errors и warnings
-			for _, e := range errors {
-				if e.Severity == "warning" {
-					totalWarnings++
-				} else {
-					totalErrors++
-				}
-			}
-
-			if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" {
-				switch outputFmt {
-				case "sarif":
-					sarifResults = append(sarifResults, reporter.FileResult{File: absPath, Errors: errors})
-				case "gitlab":
-					gitlabResults = append(gitlabResults, reporter.FileResult{File: file, Errors: errors})
-				case "checkstyle":
-					checkstyleResults = append(checkstyleResults, reporter.FileResult{File: absPath, Errors: errors})
-				}
-			}
-			if !quiet {
-				if outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
-					switch outputFmt {
-					case "json":
-						report, _ := reporter.GenerateJSONReport(file, errors)
-						fmt.Println(string(report))
-					case "junit":
-						report, _ := reporter.GenerateJUnitReport(file, errors)
-						fmt.Println(string(report))
-					case "compact":
-						reporter.PrintCompact(file, errors)
-					case "github-annotations":
-						reporter.PrintGitHubAnnotations(file, errors)
-					case "severity":
-						reporter.PrintSeverity(file, errors)
-					default:
-						reporter.PrintHumanReadable(file, errors)
-					}
-				}
-			}
-
-			if totalErrors > 0 {
-				hasErrors = true
-			}
-		}
-
-		// 5.7: exit code 0 OK, 1 errors (или parse/fix failure), 2 только warnings
 		if hasErrors || totalErrors > 0 {
 			exitCode = ExitErrors
 		} else if totalWarnings > 0 {
 			exitCode = ExitWarnings
 		}
-
-		if outputFmt == "sarif" && len(sarifResults) > 0 {
-			report, _ := reporter.GenerateSARIFReport(version, sarifResults)
-			fmt.Println(string(report))
-		}
-		if outputFmt == "gitlab" && len(gitlabResults) > 0 {
-			report, _ := reporter.GenerateGitLabCodeQualityReport(gitlabResults)
-			fmt.Println(string(report))
-		}
-		if outputFmt == "checkstyle" && len(checkstyleResults) > 0 {
-			report, _ := reporter.GenerateCheckstyleReport(checkstyleResults)
-			fmt.Println(string(report))
-		}
-
-		if quiet {
-			// В режиме quiet — только итог (OK / N errors / M warnings); для машинных форматов итог не выводим
-			machineFormat := outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "json" || outputFmt == "junit"
-			if !machineFormat {
-				if totalErrors > 0 || totalWarnings > 0 {
-					parts := []string{}
-					if totalErrors > 0 {
-						if totalErrors == 1 {
-							parts = append(parts, "1 error")
-						} else {
-							parts = append(parts, fmt.Sprintf("%d errors", totalErrors))
-						}
-					}
-					if totalWarnings > 0 {
-						if totalWarnings == 1 {
-							parts = append(parts, "1 warning")
-						} else {
-							parts = append(parts, fmt.Sprintf("%d warnings", totalWarnings))
-						}
-					}
-					fmt.Println(strings.Join(parts, ", "))
-				} else {
-					fmt.Println("OK")
-				}
-			}
-		}
-
-		os.Exit(exitCode) // 0 OK, 1 errors, 2 warnings (reserved)
+		os.Exit(exitCode)
 	},
 }
 
-// runValidation выполняет валидацию файлов и выводит результат. Используется в watch-режиме.
-func runValidation(baseCfg *config.Config, files []string) {
-	hasErrors := false
-	totalErrors := 0
-	totalWarnings := 0
+// validateAndReportFiles выполняет валидацию файлов, выводит отчёты и возвращает счётчики.
+func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors, totalWarnings int, hasErrors bool) {
 	var sarifResults []reporter.FileResult
 	var gitlabResults []reporter.FileResult
 	var checkstyleResults []reporter.FileResult
 
 	for _, file := range files {
+		logger.Debug("Validating file: %s", file)
 		absPath, err := filepath.Abs(file)
 		if err != nil {
 			absPath = file
@@ -227,6 +98,7 @@ func runValidation(baseCfg *config.Config, files []string) {
 			fixCfg.Rules.Style.ForbidConsecutiveEmptyLines = true
 			fixRes, fixErr := fixer.FixFile(absPath, &fixCfg)
 			if fixErr != nil {
+				logger.Error("Fix failed for %s: %v", file, fixErr)
 				fmt.Fprintf(os.Stderr, "Fix failed for %s: %v\n", file, fixErr)
 				hasErrors = true
 				continue
@@ -238,10 +110,12 @@ func runValidation(baseCfg *config.Config, files []string) {
 
 		errors, err := validator.Validate(absPath, cfg)
 		if err != nil {
+			logger.Error("Validation failed for %s: %v", file, err)
 			fmt.Fprintf(os.Stderr, "Error validating %s: %v\n", file, err)
 			hasErrors = true
 			continue
 		}
+		logger.Debug("File %s: %d issue(s)", file, len(errors))
 
 		for _, e := range errors {
 			if e.Severity == "warning" {
@@ -261,24 +135,22 @@ func runValidation(baseCfg *config.Config, files []string) {
 				checkstyleResults = append(checkstyleResults, reporter.FileResult{File: absPath, Errors: errors})
 			}
 		}
-		if !quiet {
-			if outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
-				switch outputFmt {
-				case "json":
-					report, _ := reporter.GenerateJSONReport(file, errors)
-					fmt.Println(string(report))
-				case "junit":
-					report, _ := reporter.GenerateJUnitReport(file, errors)
-					fmt.Println(string(report))
-				case "compact":
-					reporter.PrintCompact(file, errors)
-				case "github-annotations":
-					reporter.PrintGitHubAnnotations(file, errors)
-				case "severity":
-					reporter.PrintSeverity(file, errors)
-				default:
-					reporter.PrintHumanReadable(file, errors)
-				}
+		if !quiet && outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
+			switch outputFmt {
+			case "json":
+				report, _ := reporter.GenerateJSONReport(file, errors)
+				fmt.Println(string(report))
+			case "junit":
+				report, _ := reporter.GenerateJUnitReport(file, errors)
+				fmt.Println(string(report))
+			case "compact":
+				reporter.PrintCompact(file, errors)
+			case "github-annotations":
+				reporter.PrintGitHubAnnotations(file, errors)
+			case "severity":
+				reporter.PrintSeverity(file, errors)
+			default:
+				reporter.PrintHumanReadable(file, errors)
 			}
 		}
 
@@ -326,9 +198,12 @@ func runValidation(baseCfg *config.Config, files []string) {
 		}
 	}
 
-	if hasErrors || totalErrors > 0 {
-		// не вызываем os.Exit в watch — только выводим
-	}
+	return totalErrors, totalWarnings, hasErrors
+}
+
+// runValidation выполняет валидацию файлов и выводит результат. Используется в watch-режиме.
+func runValidation(baseCfg *config.Config, files []string) {
+	validateAndReportFiles(baseCfg, files)
 }
 
 var configInitCmd = &cobra.Command{

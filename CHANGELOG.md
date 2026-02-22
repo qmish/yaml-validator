@@ -2,6 +2,25 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.53.0] - 2026-02-20
+
+### Исправлено
+
+- Форматирование в `internal/validator/style.go`: лишний отступ у блока `RequireCommentsIndented`.
+
+### Изменено
+
+- **Рефакторинг** — устранено дублирование в `cmd/validator.go`: общая логика валидации вынесена в `validateAndReportFiles`.
+- **Плагины** — `buildFlatMap` и `findChild` перенесены в `internal/validator/plugins/utils.go`.
+- **CI** — добавлены `go vet`, `golangci-lint` и расчёт покрытия тестов (`-coverprofile=coverage.out`).
+- **Makefile** — цель `make lint` (go vet + golangci-lint).
+
+### Добавлено
+
+- **golangci-lint** — конфиг `.golangci.yml` (errcheck, govet, ineffassign, staticcheck).
+- **ROADMAP** — раздел «8. Будущие идеи»: LSP, параллельная валидация, CodeClimate, плагин Terraform, проверка консистентности, покрытие в CI.
+- **Документация** — `docs/FAQ.md`, `docs/EXAMPLES.md`, таблица документации в README.
+
 ## [1.52.0] - 2026-02-21
 
 ### Добавлено

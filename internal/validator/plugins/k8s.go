@@ -89,30 +89,3 @@ func (k *K8sValidator) Validate(node *yaml.Node) []pkg.Error {
 
 	return errors
 }
-
-func buildFlatMap(node *yaml.Node, prefix string) map[string]string {
-	result := make(map[string]string)
-	if node == nil || node.Kind != yaml.MappingNode {
-		return result
-	}
-	for i := 0; i < len(node.Content); i += 2 {
-		if i+1 >= len(node.Content) {
-			break
-		}
-		key := node.Content[i].Value
-		val := node.Content[i+1]
-		fullPath := key
-		if prefix != "" {
-			fullPath = prefix + "." + key
-		}
-		if val.Kind == yaml.ScalarNode {
-			result[fullPath] = val.Value
-		} else if val.Kind == yaml.MappingNode {
-			result[fullPath] = fullPath
-			for k, v := range buildFlatMap(val, fullPath) {
-				result[k] = v
-			}
-		}
-	}
-	return result
-}

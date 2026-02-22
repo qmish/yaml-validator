@@ -81,7 +81,7 @@ yaml-validator validate config.yaml --log-json
 
 ## Конфигурация
 
-По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`. Справочник правил и опций: [docs/RULES.md](docs/RULES.md).
+По умолчанию: `configs/default.yaml` или `yaml-validator.yaml`. Справочник правил и опций: [docs/RULES.md](docs/RULES.md). Примеры сценариев: [docs/EXAMPLES.md](docs/EXAMPLES.md). FAQ: [docs/FAQ.md](docs/FAQ.md).
 
 - **Конфиг по имени файла** — в yaml-validator.yaml добавьте `file_profiles`:
 ```yaml
@@ -133,6 +133,18 @@ rules:
     - key
 ```
 
+## Документация
+
+| Документ | Описание |
+|----------|----------|
+| [docs/RULES.md](docs/RULES.md) | Справочник правил и опций |
+| [docs/EXAMPLES.md](docs/EXAMPLES.md) | Примеры сценариев использования |
+| [docs/FAQ.md](docs/FAQ.md) | Часто задаваемые вопросы |
+| [docs/ROADMAP.md](docs/ROADMAP.md) | План развития и чек-лист |
+| [docs/PLUGINS.md](docs/PLUGINS.md) | Создание плагинов |
+| [docs/YAMLLINT_MIGRATION.md](docs/YAMLLINT_MIGRATION.md) | Миграция с yamllint |
+| [docs/COMPARISON.md](docs/COMPARISON.md) | Сравнение с другими инструментами |
+
 ## Структура проекта
 
 ```
@@ -173,6 +185,7 @@ func RegisterPlugin(name string, plugin ValidatorPlugin)
 go test ./... -v
 # Короткий прогон: go test ./... -short
 # С покрытием: make test-coverage
+# Линтер: make lint
 ```
 
 См. [CONTRIBUTING.md](CONTRIBUTING.md) для участия в разработке. [Сравнение с другими инструментами](docs/COMPARISON.md) (yamllint, kubeval, kubeconform и др.).

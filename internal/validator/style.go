@@ -177,7 +177,7 @@ func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
 		}
 	}
 
-		if opts.RequireCommentsIndented {
+	if opts.RequireCommentsIndented {
 		lastIndent := 0
 		for i, line := range lines {
 			trimmed := strings.TrimSpace(line)

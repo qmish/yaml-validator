@@ -78,18 +78,3 @@ func (d *DockerComposeValidator) Validate(node *yaml.Node) []pkg.Error {
 
 	return errors
 }
-
-func findChild(node *yaml.Node, key string) *yaml.Node {
-	if node == nil || node.Kind != yaml.MappingNode {
-		return nil
-	}
-	for i := 0; i < len(node.Content); i += 2 {
-		if i+1 >= len(node.Content) {
-			break
-		}
-		if node.Content[i].Value == key {
-			return node.Content[i+1]
-		}
-	}
-	return nil
-}
