@@ -2,6 +2,14 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.54.0] - 2026-02-20
+
+### Добавлено
+
+- **LSP (8.1)** — подкоманда `yaml-validator lsp`: Language Server Protocol для IDE. Работа в режиме stdio: `textDocument/didOpen`, `textDocument/didChange`, `textDocument/publishDiagnostics`. Подсветка ошибок в реальном времени. Зависимости: go.lsp.dev/protocol, go.lsp.dev/jsonrpc2.
+
+- **Валидация по содержимому** — `parser.ParseBytesMulti`, `validator.ValidateFromContent`, `CheckStyleContent`, `CheckCommonErrorsContent`, `CheckSyntaxContent`, `FilterInlineIgnoreContent` для LSP (несохранённые буферы).
+
 ## [1.53.0] - 2026-02-20
 
 ### Исправлено

@@ -386,10 +386,21 @@ func init() {
 
 	rulesCmd.AddCommand(rulesListCmd)
 
+	lspCmd := &cobra.Command{
+		Use:   "lsp",
+		Short: "Run Language Server Protocol (stdio)",
+		Long:  "Start yaml-validator as LSP server for IDE integration. Reads from stdin, writes to stdout. Use with editors that support LSP (VS Code, Neovim, etc.).",
+		Run: func(cmd *cobra.Command, args []string) {
+			runLSP()
+		},
+	}
+	lspCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
+
 	rootCmd.AddCommand(validateCmd)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(rulesCmd)
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(lspCmd)
 }
 
 // Execute запускает корневую команду

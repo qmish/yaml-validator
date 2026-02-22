@@ -12,13 +12,16 @@ import (
 // CheckCommonErrors ищет распространённые ошибки: табуляции (если skipTabCheck false), длинные строки, чувствительные данные.
 // При skipTabCheck true проверка табов выполняется в CheckStyle (style.forbid_tabs).
 func CheckCommonErrors(filename string, maxLineLength int, sensitivePatterns []string, skipTabCheck bool) []pkg.Error {
-	var errors []pkg.Error
-
 	data, err := os.ReadFile(filename)
 	if err != nil {
-		return errors
+		return nil
 	}
+	return CheckCommonErrorsContent(data, maxLineLength, sensitivePatterns, skipTabCheck)
+}
 
+// CheckCommonErrorsContent то же для содержимого в памяти (для LSP)
+func CheckCommonErrorsContent(data []byte, maxLineLength int, sensitivePatterns []string, skipTabCheck bool) []pkg.Error {
+	var errors []pkg.Error
 	lines := strings.Split(string(data), "\n")
 
 	for i, line := range lines {

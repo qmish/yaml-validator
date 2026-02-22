@@ -41,6 +41,27 @@ type NodeInfo struct {
 	Value interface{}
 }
 
+// ParseBytesMulti парсит мультидокументный YAML из байтов (для LSP, несохранённые буферы)
+func ParseBytesMulti(data []byte) ([]*yaml.Node, error) {
+	dec := yaml.NewDecoder(bytes.NewReader(data))
+	var nodes []*yaml.Node
+	for {
+		var node yaml.Node
+		err := dec.Decode(&node)
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, err
+		}
+		nodes = append(nodes, &node)
+	}
+	if len(nodes) == 0 {
+		return nil, fmt.Errorf("no YAML documents")
+	}
+	return nodes, nil
+}
+
 // ParseFile читает и парсит YAML-файл
 func ParseFile(filename string) (*yaml.Node, error) {
 	data, err := os.ReadFile(filename)

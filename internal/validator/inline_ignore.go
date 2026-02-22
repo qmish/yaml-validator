@@ -21,13 +21,16 @@ var (
 )
 
 // parseInlineIgnore читает файл и собирает по строкам отключённые правила.
-// Формат: # yaml-validator disable-line [rule:RuleType] [rule:...]
-//         # yaml-validator disable-next-line [rule:...]  — применяется к следующей строке.
 func parseInlineIgnore(filename string) (parsedIgnore, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
+	return parseInlineIgnoreContent(data), nil
+}
+
+// parseInlineIgnoreContent то же по содержимому (для LSP). Формат: # yaml-validator disable-line [rule:RuleType]
+func parseInlineIgnoreContent(data []byte) parsedIgnore {
 	lines := strings.Split(string(data), "\n")
 	out := make(parsedIgnore)
 
@@ -57,8 +60,7 @@ func parseInlineIgnore(filename string) (parsedIgnore, error) {
 			}
 		}
 	}
-
-	return out, nil
+	return out
 }
 
 func extractRules(line string) map[string]bool {
@@ -93,6 +95,19 @@ func FilterInlineIgnore(filename string, errors []pkg.Error) []pkg.Error {
 	if err != nil || len(ignore) == 0 {
 		return errors
 	}
+	return filterInlineIgnoreWith(ignore, errors)
+}
+
+// FilterInlineIgnoreContent то же по содержимому (для LSP)
+func FilterInlineIgnoreContent(data []byte, errors []pkg.Error) []pkg.Error {
+	ignore := parseInlineIgnoreContent(data)
+	if len(ignore) == 0 {
+		return errors
+	}
+	return filterInlineIgnoreWith(ignore, errors)
+}
+
+func filterInlineIgnoreWith(ignore parsedIgnore, errors []pkg.Error) []pkg.Error {
 
 	var out []pkg.Error
 	for _, e := range errors {

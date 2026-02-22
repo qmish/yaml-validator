@@ -66,3 +66,22 @@ kind: Pod
 	require.NoError(t, err)
 	require.Len(t, nodes, 1)
 }
+
+func TestParseBytesMulti(t *testing.T) {
+	content := []byte(`---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: first
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: second
+`)
+	nodes, err := ParseBytesMulti(content)
+	require.NoError(t, err)
+	require.Len(t, nodes, 2)
+	assert.Equal(t, yaml.DocumentNode, nodes[0].Kind)
+	assert.Equal(t, yaml.DocumentNode, nodes[1].Kind)
+}

@@ -2,6 +2,23 @@
 
 Использование yaml-validator как линтера в редакторах. Формат `-o compact` выводит `file:line[:col]: message` (ESLint-style), подходящий для парсинга IDE. Для live-валидации при редактировании можно использовать `yaml-validator validate file.yaml -o compact --watch` (повторная проверка при сохранении).
 
+## LSP (Language Server Protocol)
+
+Начиная с v1.54.0, yaml-validator поддерживает LSP. Команда `yaml-validator lsp` запускает сервер в режиме stdio для интеграции с IDE (подсветка ошибок в реальном времени).
+
+### VS Code (с расширением LSP)
+
+Добавьте в настройки или `settings.json`:
+
+```json
+{
+  "yaml-validator-lsp.serverPath": "yaml-validator",
+  "yaml-validator-lsp.serverArgs": ["lsp"]
+}
+```
+
+Или через generic LSP-клиент: команда `yaml-validator lsp`, transport stdio.
+
 ## VS Code
 
 ### Вариант 1: Task с Problem Matcher

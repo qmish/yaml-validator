@@ -96,6 +96,68 @@ func Validate(filename string, cfg *config.Config) ([]pkg.Error, error) {
 	return allErrors, nil
 }
 
+// ValidateFromContent валидирует YAML по содержимому в памяти (для LSP). JsonSchema и K8sSchema не выполняются.
+func ValidateFromContent(uri string, content []byte, cfg *config.Config) []pkg.Error {
+	var allErrors []pkg.Error
+	if cfg == nil {
+		cfg = config.DefaultConfig()
+	}
+	rules := cfg.Rules
+
+	nodes, err := parser.ParseBytesMulti(content)
+	if err != nil {
+		if rules.CheckSyntax {
+			allErrors = append(allErrors, CheckSyntaxContent(content)...)
+		}
+		return allErrors
+	}
+
+	if rules.CheckCommonErrors {
+		maxLen := rules.MaxLineLength
+		if maxLen <= 0 {
+			maxLen = 200
+		}
+		patterns := rules.SensitivePatterns
+		if len(patterns) == 0 {
+			patterns = config.DefaultConfig().Rules.SensitivePatterns
+		}
+		allErrors = append(allErrors, CheckCommonErrorsContent(content, maxLen, patterns, rules.Style.ForbidTabs)...)
+	}
+	if rules.Style.RequireDocumentStart || rules.Style.ForbidTrailingSpaces || rules.Style.ForbidTrailingDots ||
+		rules.Style.RequireNewlineAtEof || rules.Style.ForbidConsecutiveEmptyLines || rules.Style.RequireEmptyLineBetweenBlocks || rules.Style.MinEmptyLinesBetweenBlocks >= 1 || rules.Style.RequireDocumentEnd ||
+		rules.Style.RequireCommentsIndented || rules.Style.RequireQuotedKeys || rules.Style.IndentSpaces > 0 || rules.Style.ForbidTabs || rules.Style.ForbidUnicode || rules.Style.ForbidBOM {
+		allErrors = append(allErrors, CheckStyleContent(content, rules.Style)...)
+	}
+
+	for i, node := range nodes {
+		idx := 0
+		if len(nodes) > 1 {
+			idx = i + 1
+		}
+		docErrs := validateNode(node, rules, cfg)
+		for _, e := range docErrs {
+			e.DocumentIndex = idx
+			allErrors = append(allErrors, e)
+		}
+	}
+
+	if rules.InlineIgnore {
+		allErrors = FilterInlineIgnoreContent(content, allErrors)
+	}
+
+	for i := range allErrors {
+		if allErrors[i].Severity != "" {
+			continue
+		}
+		if sv, ok := rules.RuleSeverity[allErrors[i].Type]; ok && sv == "warning" {
+			allErrors[i].Severity = "warning"
+		} else {
+			allErrors[i].Severity = "error"
+		}
+	}
+	return allErrors
+}
+
 func validateNode(node *yaml.Node, rules config.ValidationRules, cfg *config.Config) []pkg.Error {
 	var errs []pkg.Error
 	if rules.CheckDuplicates {

@@ -12,13 +12,17 @@ import (
 
 // CheckStyle проверяет правила стиля (document-start/end, trailing spaces/dots, newline at EOF, consecutive empty lines, comment indentation, quoted keys, indent step)
 func CheckStyle(filename string, opts config.StyleOptions) []pkg.Error {
-	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
-		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && opts.MinEmptyLinesBetweenBlocks <= 0 && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs && !opts.ForbidUnicode && !opts.ForbidBOM {
-		return nil
-	}
-
 	data, err := os.ReadFile(filename)
 	if err != nil {
+		return nil
+	}
+	return CheckStyleContent(data, opts)
+}
+
+// CheckStyleContent проверяет правила стиля по содержимому (для LSP, несохранённые буферы)
+func CheckStyleContent(data []byte, opts config.StyleOptions) []pkg.Error {
+	if !opts.RequireDocumentStart && !opts.ForbidTrailingSpaces && !opts.ForbidTrailingDots && !opts.RequireNewlineAtEof &&
+		!opts.ForbidConsecutiveEmptyLines && !opts.RequireEmptyLineBetweenBlocks && opts.MinEmptyLinesBetweenBlocks <= 0 && !opts.RequireDocumentEnd && !opts.RequireCommentsIndented && !opts.RequireQuotedKeys && opts.IndentSpaces <= 0 && !opts.ForbidTabs && !opts.ForbidUnicode && !opts.ForbidBOM {
 		return nil
 	}
 
