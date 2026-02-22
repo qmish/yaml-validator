@@ -1,12 +1,12 @@
 // Пример Jenkinsfile с шагом валидации YAML
 // Скопируйте в корень репозитория как Jenkinsfile или используйте как референс.
-// Требуется: Jenkins с Go plugin (или образ с Go) и yaml-validator в репозитории.
+// Требуется: Jenkins с Go plugin (go-1.24+) и yaml-validator в репозитории.
 
 pipeline {
     agent any
 
     tools {
-        go 'go-1.22'
+        go 'go-1.24'
     }
 
     stages {
@@ -17,7 +17,14 @@ pipeline {
         }
         stage('Validate YAML') {
             steps {
-                sh './yaml-validator validate "**/*.yml" "**/*.yaml" -o severity'
+                sh '''
+                    FILES=$(find . -type f \\( -name "*.yaml" -o -name "*.yml" \\) ! -path "*/node_modules/*" ! -path "*/.git/*" 2>/dev/null || true)
+                    if [ -n "$FILES" ]; then
+                        echo "$FILES" | xargs ./yaml-validator validate -o severity --jobs 4
+                    else
+                        echo "No YAML files found"
+                    fi
+                '''
             }
         }
     }

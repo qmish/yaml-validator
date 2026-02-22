@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.62.0] - 2026-02-22
+
+### Добавлено
+
+- **Документация** — README (CodeClimate, LSP, Terraform, консистентность, плагины, Jenkins); docs/Jenkinsfile-example (Go 1.24, find+xargs, --jobs 4); docs/EXAMPLES.md (Terraform, консистентность).
+
 ## [1.61.0] - 2026-02-22
 
 ### Добавлено

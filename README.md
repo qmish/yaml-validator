@@ -57,6 +57,12 @@ yaml-validator validate config.yaml -o github-annotations
 # Текстовый формат с severity [ERROR] file:line: message (для скриптов, CI)
 yaml-validator validate config.yaml -o severity
 
+# Code Climate (NDJSON, для codeclimate analyze)
+yaml-validator validate config.yaml -o codeclimate
+
+# LSP для IDE (VS Code, Neovim)
+yaml-validator lsp
+
 # Автофикс (trailing spaces, newline at EOF, consecutive empty lines)
 yaml-validator validate config.yaml --fix
 
@@ -97,6 +103,8 @@ file_profiles:
 
 - **K8s-манифесты** — конфиг по умолчанию (проверка apiVersion, kind, metadata.name). Для порядка ключей K8s (metadata перед spec): `-c configs/k8s-key-order.yaml`. Для полной схемы: `-c configs/k8s-strict.yaml`.
 - **docker-compose и другой YAML** — `-c configs/docker-compose.yaml` (без обязательных K8s-полей).
+- **Terraform tfvars.yaml** — `-c configs/terraform.yaml`.
+- **Консистентность между файлами** — `consistency.enabled: true`, `consistency.paths: [version]` в конфиге.
 - **Произвольная JSON Schema** — `-c configs/json-schema.yaml` с путём к схеме в `rules.json_schema.schema_path`.
 
 ```yaml
@@ -180,7 +188,7 @@ type ValidatorPlugin interface {
 func RegisterPlugin(name string, plugin ValidatorPlugin)
 ```
 
-Встроенные плагины: `kubernetes` (apiVersion, kind, metadata), `docker-compose` (image/build у сервисов).
+Встроенные плагины: `kubernetes`, `docker-compose`, `ansible`, `helm-kustomize`, `terraform`. Подробнее: [docs/PLUGINS.md](docs/PLUGINS.md).
 
 ## Тестирование
 
@@ -218,6 +226,10 @@ validate-yaml:
     reports:
       codequality: gl-code-quality-report.json
 ```
+
+### Jenkins
+
+См. [docs/Jenkinsfile-example](docs/Jenkinsfile-example) — пример pipeline с Go 1.24, `find` + `xargs` для валидации всех YAML, `--jobs 4`.
 
 ### Git pre-commit hook
 

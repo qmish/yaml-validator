@@ -151,4 +151,26 @@ yaml-validator rules list -o yaml
 yaml-validator validate playbook.yml -c configs/ansible.yaml
 ```
 
-(Если есть `configs/ansible.yaml` — см. docs по плагинам.)
+## Сценарий: Terraform tfvars.yaml
+
+```bash
+yaml-validator validate terraform.tfvars.yaml -c configs/terraform.yaml
+```
+
+Плагин Terraform проверяет, что имена переменных используют underscore, а не hyphen.
+
+## Сценарий: Консистентность версий между файлами
+
+В `configs/consistency.yaml`:
+
+```yaml
+consistency:
+  enabled: true
+  paths: [version, apiVersion]
+```
+
+```bash
+yaml-validator validate app-v1.yaml app-v2.yaml -c configs/consistency.yaml
+```
+
+Ошибка `InconsistentValue`, если значения по указанным путям различаются.
