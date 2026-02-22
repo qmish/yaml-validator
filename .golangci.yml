@@ -9,10 +9,6 @@ linters:
     - govet
     - ineffassign
     - staticcheck
-  disable:
-    - deadcode
-    - varcheck
-
 linters-settings:
   govet:
     enable-all: true

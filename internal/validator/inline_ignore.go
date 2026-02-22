@@ -83,7 +83,7 @@ func (p parsedIgnore) isDisabled(line int, ruleType string) bool {
 	if !ok {
 		return false
 	}
-	if set == nil || len(set) == 0 {
+	if len(set) == 0 {
 		return true
 	}
 	return set[ruleType]

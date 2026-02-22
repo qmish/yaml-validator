@@ -113,7 +113,7 @@ func traverseKeyValues(node *yaml.Node, path string, callback func(keyPath strin
 		for i := 0; i+1 < len(node.Content); i += 2 {
 			keyNode := node.Content[i]
 			valNode := node.Content[i+1]
-			keyPath := path
+			var keyPath string
 			if path != "" {
 				keyPath = path + "." + keyNode.Value
 			} else {

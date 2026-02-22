@@ -82,7 +82,7 @@ func runLSP() {
 }
 
 func unmarshalParams(raw json.RawMessage, v interface{}) error {
-	if raw == nil || len(raw) == 0 {
+	if len(raw) == 0 {
 		return nil
 	}
 	return json.Unmarshal(raw, v)
@@ -96,7 +96,7 @@ func sendDiagnostics(conn jsonrpc2.Conn, docURI, content string, version uint64,
 	cfg := config.ConfigForFile(baseCfg, filePath)
 	errors := validator.ValidateFromContent(docURI, []byte(content), cfg)
 	diagnostics := errorsToDiagnostics(errors)
-	conn.Notify(context.Background(), "textDocument/publishDiagnostics", protocol.PublishDiagnosticsParams{
+	_ = conn.Notify(context.Background(), "textDocument/publishDiagnostics", protocol.PublishDiagnosticsParams{
 		URI:         protocol.DocumentURI(docURI),
 		Version:     uint32(version),
 		Diagnostics: diagnostics,

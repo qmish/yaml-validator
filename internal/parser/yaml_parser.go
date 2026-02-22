@@ -105,7 +105,7 @@ func TraverseMappings(node *yaml.Node, path string, callback func(node *yaml.Nod
 		for i := 0; i < len(node.Content); i += 2 {
 			if i+1 < len(node.Content) {
 				key := node.Content[i].Value
-				newPath := path
+				var newPath string
 				if path != "" {
 					newPath = path + "." + key
 				} else {
@@ -148,7 +148,7 @@ func TraverseSequences(node *yaml.Node, path string, callback func(seqNode *yaml
 		for i := 0; i < len(node.Content); i += 2 {
 			if i+1 < len(node.Content) {
 				key := node.Content[i].Value
-				newPath := path
+				var newPath string
 				if path != "" {
 					newPath = path + "." + key
 				} else {

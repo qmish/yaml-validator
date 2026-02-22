@@ -38,7 +38,7 @@ var rootCmd = &cobra.Command{
 	Short: "YAML validation tool for DevOps",
 	Long:  "A CLI tool for validating YAML files: syntax, duplicates, integrity, and common errors",
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
