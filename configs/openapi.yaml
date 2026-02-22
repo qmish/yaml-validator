@@ -1,0 +1,12 @@
+# Конфигурация для OpenAPI/Swagger YAML спецификаций
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: false
+  check_common_errors: true
+  required_fields: []
+  max_line_length: 200
+  style:
+    require_document_start: false
+    forbid_trailing_spaces: false
+    require_newline_at_eof: false

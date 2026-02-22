@@ -94,6 +94,7 @@ pkg.Error{
 - **ansible** (v1.46.0) — проверка структуры Ansible playbook: hosts или name в каждом play, tasks (module/include/role), roles (role spec должен иметь ключ `role`). Пропускает K8s и docker-compose файлы.
 - **helm-kustomize** (v1.47.0) — базовая валидация Helm Chart.yaml (apiVersion, name, version) и Kustomize kustomization.yaml (apiVersion с kustomize, resources или bases). Не реагирует на K8s-манифесты.
 - **terraform** (v1.57.0) — проверка YAML в контексте Terraform (tfvars.yaml, backend config). TerraformVarNameHyphen: имена переменных должны использовать underscore, не hyphen. Пропускает K8s, docker-compose, Ansible, Helm.
+- **openapi** (v1.64.0) — проверка OpenAPI 3 / Swagger 2: openapi/swagger, info (title, version), paths.
 
 ## Пример: проверка обязательного поля
 
