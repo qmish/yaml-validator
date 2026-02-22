@@ -1,0 +1,13 @@
+# Проверка консистентности значений между файлами (8.5)
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: false
+  check_common_errors: true
+  required_fields: []
+  max_line_length: 200
+
+consistency:
+  enabled: true
+  paths:
+    - version

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -181,4 +182,53 @@ func GetRootMapping(node *yaml.Node) *yaml.Node {
 		return node
 	}
 	return nil
+}
+
+// GetValueAtPath извлекает скалярное значение по dot-пути (например, "metadata.name").
+// Возвращает строковое представление и true, если найдено; иначе "", false.
+func GetValueAtPath(root *yaml.Node, path string) (string, bool) {
+	node := GetRootMapping(root)
+	if node == nil || path == "" {
+		return "", false
+	}
+	parts := splitPath(path)
+	for _, key := range parts {
+		if node == nil || node.Kind != yaml.MappingNode {
+			return "", false
+		}
+		found := false
+		for i := 0; i < len(node.Content); i += 2 {
+			if i+1 >= len(node.Content) {
+				break
+			}
+			if node.Content[i].Value == key {
+				node = node.Content[i+1]
+				found = true
+				break
+			}
+		}
+		if !found {
+			return "", false
+		}
+	}
+	if node == nil {
+		return "", false
+	}
+	if node.Kind == yaml.ScalarNode {
+		return node.Value, true
+	}
+	return "", false
+}
+
+func splitPath(path string) []string {
+	if path == "" {
+		return nil
+	}
+	var parts []string
+	for _, s := range strings.Split(path, ".") {
+		if s != "" {
+			parts = append(parts, s)
+		}
+	}
+	return parts
 }

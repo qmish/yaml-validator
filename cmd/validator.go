@@ -205,6 +205,34 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 		}
 	}
 
+	// Проверка консистентности между файлами (8.5)
+	successfulFiles := make([]string, 0, len(results))
+	for _, r := range results {
+		if r.err == nil {
+			successfulFiles = append(successfulFiles, r.absPath)
+		}
+	}
+	var consistencyErrs []pkg.Error
+	if baseCfg.Consistency.Enabled && len(successfulFiles) >= 2 && len(baseCfg.Consistency.Paths) > 0 {
+		consistencyErrs = validator.CheckConsistency(successfulFiles, baseCfg.Consistency.Paths)
+		totalErrors += len(consistencyErrs)
+		if len(consistencyErrs) > 0 {
+			hasErrors = true
+		}
+		if len(consistencyErrs) > 0 && len(sarifResults) > 0 {
+			sarifResults[0].Errors = append(sarifResults[0].Errors, consistencyErrs...)
+		}
+		if len(consistencyErrs) > 0 && len(gitlabResults) > 0 {
+			gitlabResults[0].Errors = append(gitlabResults[0].Errors, consistencyErrs...)
+		}
+		if len(consistencyErrs) > 0 && len(checkstyleResults) > 0 {
+			checkstyleResults[0].Errors = append(checkstyleResults[0].Errors, consistencyErrs...)
+		}
+		if len(consistencyErrs) > 0 && len(codeclimateResults) > 0 {
+			codeclimateResults[0].Errors = append(codeclimateResults[0].Errors, consistencyErrs...)
+		}
+	}
+
 	if outputFmt == "sarif" && len(sarifResults) > 0 {
 		report, _ := reporter.GenerateSARIFReport(version, sarifResults)
 		fmt.Println(string(report))
@@ -221,6 +249,11 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 		wd, _ := os.Getwd()
 		report, _ := reporter.GenerateCodeClimateReport(codeclimateResults, wd)
 		fmt.Print(string(report))
+	}
+	if !quiet && len(consistencyErrs) > 0 {
+		for _, e := range consistencyErrs {
+			reporter.PrintSeverity("(consistency)", []pkg.Error{e})
+		}
 	}
 
 	if quiet {

@@ -79,6 +79,12 @@ type ValidationRules struct {
 	SensitivePatterns []string          `yaml:"sensitive_patterns"`
 }
 
+// ConsistencyOptions — проверка консистентности значений между файлами (8.5)
+type ConsistencyOptions struct {
+	Enabled bool     `yaml:"enabled"`
+	Paths   []string `yaml:"paths"` // dot-notation пути для сравнения, напр. "version", "metadata.annotations.app-version"
+}
+
 // FileProfile — правило автовыбора конфига по маске пути к файлу
 type FileProfile struct {
 	Pattern string `yaml:"pattern"` // маска, напр. "**/k8s/**", "*docker-compose*.yaml"
@@ -87,8 +93,9 @@ type FileProfile struct {
 
 // Config основная структура конфигурации
 type Config struct {
-	Rules         ValidationRules `yaml:"rules"`
-	FileProfiles  []FileProfile   `yaml:"file_profiles"` // автовыбор профиля по имени файла (4.5)
+	Rules         ValidationRules   `yaml:"rules"`
+	FileProfiles  []FileProfile     `yaml:"file_profiles"`  // автовыбор профиля по имени файла (4.5)
+	Consistency   ConsistencyOptions `yaml:"consistency"`    // консистентность между файлами (8.5)
 }
 
 // MatchFileProfile проверяет, подходит ли путь к файлу под маску.

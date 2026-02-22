@@ -31,6 +31,28 @@ func TestParseFile_NotFound(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestGetValueAtPath(t *testing.T) {
+	content := `version: "1.0"
+metadata:
+  name: test
+`
+	var node yaml.Node
+	require.NoError(t, yaml.Unmarshal([]byte(content), &node))
+	root := GetRootMapping(&node)
+	require.NotNil(t, root)
+
+	val, ok := GetValueAtPath(root, "version")
+	assert.True(t, ok)
+	assert.Equal(t, "1.0", val)
+
+	val, ok = GetValueAtPath(root, "metadata.name")
+	assert.True(t, ok)
+	assert.Equal(t, "test", val)
+
+	_, ok = GetValueAtPath(root, "nonexistent")
+	assert.False(t, ok)
+}
+
 func TestParseFileMulti(t *testing.T) {
 	tmp := t.TempDir()
 	f := filepath.Join(tmp, "multi.yaml")
