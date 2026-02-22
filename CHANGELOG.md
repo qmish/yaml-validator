@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.63.0] - 2026-02-22
+
+### Добавлено
+
+- **Формат SonarQube Generic (8.9)** — вывод `-o sonarqube`: JSON SonarQube Generic Issue Import (rules, issues). reporter: 77.5%.
+
 ## [1.62.0] - 2026-02-22
 
 ### Добавлено

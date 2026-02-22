@@ -113,7 +113,7 @@
 | 8.6 | **Покрытие в CI** | Минимальный порог покрытия тестами и публикация в артефакты/PR. | ✅ | v1.59.0 |
 | 8.7 | **Официальный Docker-образ** | Публикация в Docker Hub (yaml-validator/yaml-validator) с тегами по версиям. | ⬜ | |
 | 8.8 | **VS Code расширение** | Расширение для VS Code с подсветкой ошибок, интеграция LSP. | ⬜ | |
-| 8.9 | **Формат SonarQube Generic** | Вывод в формате SonarQube Generic Issue Import. | ⬜ | |
+| 8.9 | **Формат SonarQube Generic** | Вывод в формате SonarQube Generic Issue Import. | ✅ | v1.63.0 |
 | 8.10 | **Плагин OpenAPI** | Проверка YAML OpenAPI/Swagger спецификаций (paths, schemas). | ⬜ | |
 
 ---
@@ -172,6 +172,7 @@
 | v1.60.0 | Техдолг: Makefile coverage-check, go mod tidy | 2026-02-22 |
 | v1.61.0 | ROADMAP: новые идеи 8.7–8.10 | 2026-02-22 |
 | v1.62.0 | Документация: README, Jenkinsfile, EXAMPLES | 2026-02-22 |
+| v1.63.0 | Формат SonarQube Generic (8.9) | 2026-02-22 |
 | *далее* | — | — |
 
 ---

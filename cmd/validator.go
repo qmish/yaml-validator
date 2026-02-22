@@ -145,6 +145,7 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 	var gitlabResults []reporter.FileResult
 	var checkstyleResults []reporter.FileResult
 	var codeclimateResults []reporter.FileResult
+	var sonarqubeResults []reporter.FileResult
 
 	for _, r := range results {
 		if r.err != nil {
@@ -169,7 +170,7 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 			}
 		}
 
-		if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "codeclimate" {
+		if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "codeclimate" || outputFmt == "sonarqube" {
 			switch outputFmt {
 			case "sarif":
 				sarifResults = append(sarifResults, reporter.FileResult{File: r.absPath, Errors: errors})
@@ -179,9 +180,11 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 				checkstyleResults = append(checkstyleResults, reporter.FileResult{File: r.absPath, Errors: errors})
 			case "codeclimate":
 				codeclimateResults = append(codeclimateResults, reporter.FileResult{File: r.absPath, Errors: errors})
+			case "sonarqube":
+				sonarqubeResults = append(sonarqubeResults, reporter.FileResult{File: r.absPath, Errors: errors})
 			}
 		}
-		if !quiet && outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" && outputFmt != "codeclimate" {
+		if !quiet && outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" && outputFmt != "codeclimate" && outputFmt != "sonarqube" {
 			switch outputFmt {
 			case "json":
 				report, _ := reporter.GenerateJSONReport(r.file, errors)
@@ -231,6 +234,9 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 		if len(consistencyErrs) > 0 && len(codeclimateResults) > 0 {
 			codeclimateResults[0].Errors = append(codeclimateResults[0].Errors, consistencyErrs...)
 		}
+		if len(consistencyErrs) > 0 && len(sonarqubeResults) > 0 {
+			sonarqubeResults[0].Errors = append(sonarqubeResults[0].Errors, consistencyErrs...)
+		}
 	}
 
 	if outputFmt == "sarif" && len(sarifResults) > 0 {
@@ -250,6 +256,11 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 		report, _ := reporter.GenerateCodeClimateReport(codeclimateResults, wd)
 		fmt.Print(string(report))
 	}
+	if outputFmt == "sonarqube" && len(sonarqubeResults) > 0 {
+		wd, _ := os.Getwd()
+		report, _ := reporter.GenerateSonarQubeGenericReport(sonarqubeResults, wd)
+		fmt.Println(string(report))
+	}
 	if !quiet && len(consistencyErrs) > 0 {
 		for _, e := range consistencyErrs {
 			reporter.PrintSeverity("(consistency)", []pkg.Error{e})
@@ -257,7 +268,7 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 	}
 
 	if quiet {
-		machineFormat := outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "codeclimate" || outputFmt == "json" || outputFmt == "junit"
+		machineFormat := outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "codeclimate" || outputFmt == "sonarqube" || outputFmt == "json" || outputFmt == "junit"
 		if !machineFormat {
 			if totalErrors > 0 || totalWarnings > 0 {
 				parts := []string{}
@@ -452,7 +463,7 @@ func loadConfig() *config.Config {
 }
 
 func init() {
-	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, checkstyle, codeclimate, compact, gitlab, github-annotations, severity")
+	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, checkstyle, codeclimate, sonarqube, compact, gitlab, github-annotations, severity")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output: only OK or N errors")
