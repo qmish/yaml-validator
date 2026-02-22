@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.56.0] - 2026-02-20
+
+### Добавлено
+
+- **Формат CodeClimate (8.3)** — вывод `-o codeclimate`: NDJSON в формате Code Climate Engine Specification. Каждая строка — JSON-объект issue (type, check_name, description, categories, location, severity, fingerprint). Интеграция с Code Climate, codeclimate analyze.
+
 ## [1.55.0] - 2026-02-20
 
 ### Добавлено

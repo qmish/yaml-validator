@@ -144,6 +144,7 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 	var sarifResults []reporter.FileResult
 	var gitlabResults []reporter.FileResult
 	var checkstyleResults []reporter.FileResult
+	var codeclimateResults []reporter.FileResult
 
 	for _, r := range results {
 		if r.err != nil {
@@ -168,7 +169,7 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 			}
 		}
 
-		if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" {
+		if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "codeclimate" {
 			switch outputFmt {
 			case "sarif":
 				sarifResults = append(sarifResults, reporter.FileResult{File: r.absPath, Errors: errors})
@@ -176,9 +177,11 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 				gitlabResults = append(gitlabResults, reporter.FileResult{File: r.file, Errors: errors})
 			case "checkstyle":
 				checkstyleResults = append(checkstyleResults, reporter.FileResult{File: r.absPath, Errors: errors})
+			case "codeclimate":
+				codeclimateResults = append(codeclimateResults, reporter.FileResult{File: r.absPath, Errors: errors})
 			}
 		}
-		if !quiet && outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
+		if !quiet && outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" && outputFmt != "codeclimate" {
 			switch outputFmt {
 			case "json":
 				report, _ := reporter.GenerateJSONReport(r.file, errors)
@@ -214,9 +217,14 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 		report, _ := reporter.GenerateCheckstyleReport(checkstyleResults)
 		fmt.Println(string(report))
 	}
+	if outputFmt == "codeclimate" && len(codeclimateResults) > 0 {
+		wd, _ := os.Getwd()
+		report, _ := reporter.GenerateCodeClimateReport(codeclimateResults, wd)
+		fmt.Print(string(report))
+	}
 
 	if quiet {
-		machineFormat := outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "json" || outputFmt == "junit"
+		machineFormat := outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" || outputFmt == "codeclimate" || outputFmt == "json" || outputFmt == "junit"
 		if !machineFormat {
 			if totalErrors > 0 || totalWarnings > 0 {
 				parts := []string{}
@@ -411,7 +419,7 @@ func loadConfig() *config.Config {
 }
 
 func init() {
-	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, checkstyle, compact, gitlab, github-annotations, severity")
+	validateCmd.Flags().StringVarP(&outputFmt, "output", "o", "human", "Output format: human, json, junit, sarif, checkstyle, codeclimate, compact, gitlab, github-annotations, severity")
 	validateCmd.Flags().StringVarP(&configPath, "config", "c", "", "Path to configuration file")
 	validateCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose (debug) logging")
 	validateCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output: only OK or N errors")
