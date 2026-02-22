@@ -2,6 +2,22 @@
 
 Инструкции и скрипты для установки yaml-validator из пакетов и сборки .deb, .rpm, Homebrew, Chocolatey.
 
+## Docker / GitHub Container Registry
+
+Официальный образ публикуется в GHCR при push тегов `v*` и при создании GitHub Release.
+
+```bash
+# Запуск (тег = версия, например v1.64.0)
+docker run --rm -v $(pwd):/workspace ghcr.io/qmish/yaml-validator:latest validate config.yaml
+
+# Указать версию
+docker run --rm -v $(pwd):/workspace ghcr.io/qmish/yaml-validator:v1.64.0 validate **/*.yaml
+```
+
+Теги: `latest`, `v1.64.0`, `1.64` (major.minor).
+
+---
+
 ## Скачивание релиза
 
 Бинарники публикуются на [GitHub Releases](https://github.com/qmish/yaml-validator/releases).

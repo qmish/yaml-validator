@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.65.0] - 2026-02-22
+
+### Добавлено
+
+- **Docker-образ GHCR (8.7)** — workflow docker-publish: push тегов v* → ghcr.io/qmish/yaml-validator. docs/DISTRIBUTION.md.
+
 ## [1.64.0] - 2026-02-22
 
 ### Добавлено
