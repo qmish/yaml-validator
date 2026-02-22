@@ -28,6 +28,24 @@ jobs:
       - name: Run tests
         run: go test ./... -v -short -coverprofile=coverage.out -covermode=atomic
 
+      - name: Check coverage threshold
+        run: |
+          threshold=40
+          total=$(go tool cover -func=coverage.out | grep total | awk '{gsub(/%/,"",$3); print $3}')
+          echo "Coverage: ${total}%"
+          if [ -z "$total" ]; then echo "No coverage data"; exit 1; fi
+          below=$(echo "$total < $threshold" | bc)
+          if [ "$below" -eq 1 ]; then
+            echo "Coverage ${total}% is below threshold ${threshold}%"
+            exit 1
+          fi
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+
       - name: Regression tests
         run: go test ./internal/regression/... -v
 

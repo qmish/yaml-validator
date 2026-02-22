@@ -7,6 +7,7 @@ docs/release/release-*/
 docs/release/*.tar.gz
 
 # Build output
+coverage
 coverage.out
 coverage.html
 *.tar.gz
