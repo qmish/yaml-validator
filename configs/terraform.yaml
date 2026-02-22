@@ -1,0 +1,17 @@
+# Конфигурация для Terraform YAML (tfvars.yaml, backend config)
+rules:
+  check_syntax: true
+  check_duplicates: true
+  check_integrity: false  # без обязательных K8s-полей
+  check_common_errors: true
+  required_fields: []
+  max_line_length: 200
+  sensitive_patterns:
+    - password
+    - secret
+    - token
+    - key
+  style:
+    require_document_start: false
+    forbid_trailing_spaces: false
+    require_newline_at_eof: false

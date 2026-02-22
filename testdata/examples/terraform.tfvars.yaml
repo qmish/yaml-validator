@@ -1,0 +1,4 @@
+# Terraform variables (YAML format)
+region: "us-east-1"
+instance-type: "t3.micro"  # hyphen — Terraform plugin suggests underscore
+environment: "prod"

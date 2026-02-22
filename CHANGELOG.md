@@ -2,6 +2,12 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.57.0] - 2026-02-20
+
+### Добавлено
+
+- **Плагин Terraform (8.4)** — TerraformValidator: проверка tfvars.yaml и YAML в контексте Terraform. Правило `TerraformVarNameHyphen`: имена переменных Terraform используют underscore, не hyphen. Конфиг `configs/terraform.yaml`.
+
 ## [1.56.0] - 2026-02-20
 
 ### Добавлено
