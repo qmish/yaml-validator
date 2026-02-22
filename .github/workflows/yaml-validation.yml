@@ -23,7 +23,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.64
+          version: v2.10.1
 
       - name: Run tests
         run: go test ./... -v -short -coverprofile=coverage.out -covermode=atomic
@@ -34,8 +34,7 @@ jobs:
           total=$(go tool cover -func=coverage.out | grep total | awk '{gsub(/%/,"",$3); print $3}')
           echo "Coverage: ${total}%"
           if [ -z "$total" ]; then echo "No coverage data"; exit 1; fi
-          below=$(echo "$total < $threshold" | bc)
-          if [ "$below" -eq 1 ]; then
+          if awk -v t="$total" -v th="$threshold" 'BEGIN {exit (t < th) ? 0 : 1}'; then
             echo "Coverage ${total}% is below threshold ${threshold}%"
             exit 1
           fi
@@ -65,3 +64,19 @@ jobs:
       - name: Run validator in Docker
         run: |
           docker run --rm -v $PWD:/workspace yaml-validator validate testdata/examples/valid.yaml testdata/examples/k8s-deployment.yaml
+
+  vscode-extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install and build extension
+        run: |
+          cd extensions/vscode-yaml-validator
+          npm install
+          npm run compile

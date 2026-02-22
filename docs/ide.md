@@ -6,7 +6,21 @@
 
 Начиная с v1.54.0, yaml-validator поддерживает LSP. Команда `yaml-validator lsp` запускает сервер в режиме stdio для интеграции с IDE (подсветка ошибок в реальном времени).
 
-### VS Code (с расширением LSP)
+### VS Code
+
+**Вариант A: Расширение YAML Validator** (рекомендуется)
+
+В репозитории есть готовое расширение `extensions/vscode-yaml-validator`. Установка из исходников:
+
+```bash
+cd extensions/vscode-yaml-validator
+npm install
+npm run compile
+```
+
+Затем в VS Code: F5 для запуска в режиме Extension Development Host. Либо собрать .vsix: `vsce package` и установить через Extensions → Install from VSIX.
+
+**Вариант B: Generic LSP-клиент**
 
 Добавьте в настройки или `settings.json`:
 

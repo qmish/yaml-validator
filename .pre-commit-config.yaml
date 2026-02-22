@@ -5,9 +5,10 @@
 # Вариант 1: Official hook — устанавливается из репозитория (требуется Go)
 repos:
   - repo: https://github.com/qmish/yaml-validator
-    rev: v1.36.0  # укажите нужную версию
+    rev: v1.65.0
     hooks:
       - id: yaml-validator
+        exclude: ^(\.github/|configs/)
 
 # Вариант 2: Local — yaml-validator должен быть в PATH (бинарник или go build)
 # repos:

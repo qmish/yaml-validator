@@ -2,6 +2,16 @@
 
 Все изменения проекта документируются в этом файле.
 
+## [1.66.0] - 2026-02-22
+
+### Добавлено
+
+- **VS Code расширение (8.8)** — extensions/vscode-yaml-validator: LSP-клиент для yaml-validator lsp, подсветка ошибок YAML в реальном времени. Конфиг `yamlValidator.serverPath`. docs/ide.md: вариант A (расширение) и B (generic LSP).
+
+### Изменено
+
+- **CI** — проверка покрытия: вместо `bc` используется `awk` (портируемость). golangci-lint: v1.64 → v2.10.1. Добавлен job `vscode-extension` (Node.js, npm install, npm run compile). Добавлен `.dockerignore` (исключены extensions/, testdata/, docs/release и др.). configs/default.yaml: file_profiles для `.github/**` (docker-compose) — pre-commit проходит.
+
 ## [1.65.0] - 2026-02-22
 
 ### Добавлено

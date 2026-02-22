@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Docs and releases (not needed in image)
+docs/release
+release-*
+
+# Tests and examples (reduce image size)
+testdata
+*.test
+
+# VS Code extension (not needed in Docker image)
+extensions/
+
+# Build artifacts
+bin/
+coverage.out
+coverage.html
+*.exe
+
+# IDE and local config
+.idea
+.vscode
+yaml-validator.yaml
+COMMITS-AUTHORSHIP.local.md

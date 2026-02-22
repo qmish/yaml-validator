@@ -1,3 +1,15 @@
+file_profiles:
+  - pattern: "**/.github/**"
+    config: "configs/docker-compose.yaml"
+  - pattern: "**/configs/**"
+    config: "configs/docker-compose.yaml"
+  - pattern: "**/k8s/**"
+    config: "configs/k8s-strict.yaml"
+  - pattern: "*docker-compose*.yaml"
+    config: "configs/docker-compose.yaml"
+  - pattern: "*docker-compose*.yml"
+    config: "configs/docker-compose.yaml"
+
 rules:
   check_syntax: true
   check_duplicates: true
