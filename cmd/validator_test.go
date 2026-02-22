@@ -56,6 +56,18 @@ func TestValidateCommand_WatchFlag(t *testing.T) {
 	}
 }
 
+func TestValidateCommand_JobsFlag(t *testing.T) {
+	rootCmd.SetArgs([]string{"validate", "--help"})
+	var buf bytes.Buffer
+	rootCmd.SetErr(&buf)
+	rootCmd.SetOut(&buf)
+	_ = rootCmd.Execute()
+	out := buf.String()
+	if !strings.Contains(out, "--jobs") && !strings.Contains(out, "jobs") {
+		t.Errorf("Expected --jobs in help, got: %s", out)
+	}
+}
+
 func TestValidateCommand_Integration(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode")

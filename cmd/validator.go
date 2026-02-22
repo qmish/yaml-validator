@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
@@ -15,6 +16,7 @@ import (
 	"yaml-validator/internal/logger"
 	"yaml-validator/internal/reporter"
 	"yaml-validator/internal/validator"
+	"yaml-validator/pkg"
 	_ "yaml-validator/internal/validator/plugins" // регистрация плагинов
 )
 
@@ -28,6 +30,7 @@ var (
 	quiet      bool
 	fix        bool
 	watch      bool
+	jobs       int
 )
 
 var rootCmd = &cobra.Command{
@@ -49,7 +52,7 @@ const (
 var validateCmd = &cobra.Command{
 	Use:   "validate [file]",
 	Short: "Validate YAML file",
-	Long:  "Validate YAML files. Exit codes: 0 — OK, 1 — validation errors, 2 — only warnings (reserved for future). Use --watch to re-run on file changes.",
+	Long:  "Validate YAML files. Exit codes: 0 — OK, 1 — validation errors, 2 — only warnings. Use --jobs N for parallel validation. Use --watch to re-run on file changes.",
 	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if verbose {
@@ -77,45 +80,85 @@ var validateCmd = &cobra.Command{
 	},
 }
 
+// fileValidationResult — результат валидации одного файла.
+type fileValidationResult struct {
+	file       string
+	absPath    string
+	errors     []pkg.Error
+	err        error
+	fixFailed  bool
+}
+
+// validateOneFile выполняет фикс (если fix) и валидацию одного файла.
+func validateOneFile(file string, baseCfg *config.Config) fileValidationResult {
+	absPath, err := filepath.Abs(file)
+	if err != nil {
+		absPath = file
+	}
+	cfg := config.ConfigForFile(baseCfg, absPath)
+
+	if fix {
+		fixCfg := *cfg
+		fixCfg.Rules.Style.ForbidTrailingSpaces = true
+		fixCfg.Rules.Style.RequireNewlineAtEof = true
+		fixCfg.Rules.Style.ForbidConsecutiveEmptyLines = true
+		fixRes, fixErr := fixer.FixFile(absPath, &fixCfg)
+		if fixErr != nil {
+			return fileValidationResult{file: file, absPath: absPath, err: fixErr, fixFailed: true}
+		}
+		if fixRes.Modified && !quiet {
+			fmt.Printf("Fixed %s: %v\n", file, fixRes.Applied)
+		}
+	}
+
+	errors, valErr := validator.Validate(absPath, cfg)
+	return fileValidationResult{file: file, absPath: absPath, errors: errors, err: valErr}
+}
+
 // validateAndReportFiles выполняет валидацию файлов, выводит отчёты и возвращает счётчики.
 func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors, totalWarnings int, hasErrors bool) {
+	results := make([]fileValidationResult, len(files))
+
+	runParallel := jobs > 1 && len(files) > 1
+	if runParallel {
+		sem := make(chan struct{}, jobs)
+		var wg sync.WaitGroup
+		for i, file := range files {
+			wg.Add(1)
+			go func(i int, file string) {
+				defer wg.Done()
+				sem <- struct{}{}
+				defer func() { <-sem }()
+				logger.Debug("Validating file: %s", file)
+				results[i] = validateOneFile(file, baseCfg)
+			}(i, file)
+		}
+		wg.Wait()
+	} else {
+		for i, file := range files {
+			logger.Debug("Validating file: %s", file)
+			results[i] = validateOneFile(file, baseCfg)
+		}
+	}
+
 	var sarifResults []reporter.FileResult
 	var gitlabResults []reporter.FileResult
 	var checkstyleResults []reporter.FileResult
 
-	for _, file := range files {
-		logger.Debug("Validating file: %s", file)
-		absPath, err := filepath.Abs(file)
-		if err != nil {
-			absPath = file
-		}
-
-		cfg := config.ConfigForFile(baseCfg, absPath)
-		if fix {
-			fixCfg := *cfg
-			fixCfg.Rules.Style.ForbidTrailingSpaces = true
-			fixCfg.Rules.Style.RequireNewlineAtEof = true
-			fixCfg.Rules.Style.ForbidConsecutiveEmptyLines = true
-			fixRes, fixErr := fixer.FixFile(absPath, &fixCfg)
-			if fixErr != nil {
-				logger.Error("Fix failed for %s: %v", file, fixErr)
-				fmt.Fprintf(os.Stderr, "Fix failed for %s: %v\n", file, fixErr)
-				hasErrors = true
-				continue
+	for _, r := range results {
+		if r.err != nil {
+			logger.Error("Validation failed for %s: %v", r.file, r.err)
+			msg := "Error validating %s: %v"
+			if r.fixFailed {
+				msg = "Fix failed for %s: %v"
 			}
-			if fixRes.Modified && !quiet {
-				fmt.Printf("Fixed %s: %v\n", file, fixRes.Applied)
-			}
-		}
-
-		errors, err := validator.Validate(absPath, cfg)
-		if err != nil {
-			logger.Error("Validation failed for %s: %v", file, err)
-			fmt.Fprintf(os.Stderr, "Error validating %s: %v\n", file, err)
+			fmt.Fprintf(os.Stderr, msg+"\n", r.file, r.err)
 			hasErrors = true
+			totalErrors++
 			continue
 		}
-		logger.Debug("File %s: %d issue(s)", file, len(errors))
+		errors := r.errors
+		logger.Debug("File %s: %d issue(s)", r.file, len(errors))
 
 		for _, e := range errors {
 			if e.Severity == "warning" {
@@ -128,29 +171,29 @@ func validateAndReportFiles(baseCfg *config.Config, files []string) (totalErrors
 		if outputFmt == "sarif" || outputFmt == "gitlab" || outputFmt == "checkstyle" {
 			switch outputFmt {
 			case "sarif":
-				sarifResults = append(sarifResults, reporter.FileResult{File: absPath, Errors: errors})
+				sarifResults = append(sarifResults, reporter.FileResult{File: r.absPath, Errors: errors})
 			case "gitlab":
-				gitlabResults = append(gitlabResults, reporter.FileResult{File: file, Errors: errors})
+				gitlabResults = append(gitlabResults, reporter.FileResult{File: r.file, Errors: errors})
 			case "checkstyle":
-				checkstyleResults = append(checkstyleResults, reporter.FileResult{File: absPath, Errors: errors})
+				checkstyleResults = append(checkstyleResults, reporter.FileResult{File: r.absPath, Errors: errors})
 			}
 		}
 		if !quiet && outputFmt != "sarif" && outputFmt != "gitlab" && outputFmt != "checkstyle" {
 			switch outputFmt {
 			case "json":
-				report, _ := reporter.GenerateJSONReport(file, errors)
+				report, _ := reporter.GenerateJSONReport(r.file, errors)
 				fmt.Println(string(report))
 			case "junit":
-				report, _ := reporter.GenerateJUnitReport(file, errors)
+				report, _ := reporter.GenerateJUnitReport(r.file, errors)
 				fmt.Println(string(report))
 			case "compact":
-				reporter.PrintCompact(file, errors)
+				reporter.PrintCompact(r.file, errors)
 			case "github-annotations":
-				reporter.PrintGitHubAnnotations(file, errors)
+				reporter.PrintGitHubAnnotations(r.file, errors)
 			case "severity":
-				reporter.PrintSeverity(file, errors)
+				reporter.PrintSeverity(r.file, errors)
 			default:
-				reporter.PrintHumanReadable(file, errors)
+				reporter.PrintHumanReadable(r.file, errors)
 			}
 		}
 
@@ -374,6 +417,7 @@ func init() {
 	validateCmd.Flags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output: only OK or N errors")
 	validateCmd.Flags().BoolVar(&fix, "fix", false, "Auto-fix: trailing spaces, newline at EOF, consecutive empty lines")
 	validateCmd.Flags().BoolVar(&watch, "watch", false, "Re-run validation when files change")
+	validateCmd.Flags().IntVar(&jobs, "jobs", 1, "Number of parallel validation jobs (1 = sequential)")
 	validateCmd.Flags().BoolVar(&logJSON, "log-json", false, "Output logs in JSON format (for ELK, Loki)")
 
 	configCmd := &cobra.Command{

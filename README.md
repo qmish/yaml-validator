@@ -63,6 +63,9 @@ yaml-validator validate config.yaml --fix
 # Watch-режим — повторная валидация при изменении файлов (Ctrl+C для выхода)
 yaml-validator validate config.yaml --watch
 
+# Параллельная валидация нескольких файлов (--jobs N)
+yaml-validator validate file1.yaml file2.yaml file3.yaml --jobs 4
+
 # Использование конфигурационного файла
 yaml-validator validate config.yaml -c configs/default.yaml
 
